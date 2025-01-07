@@ -1,2 +1,1 @@
-# functional-analysis
-Functional Analysis Block
+# Functional Analysis Block
