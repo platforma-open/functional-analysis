@@ -8,13 +8,16 @@
     "test": "vitest",
     "format": "/usr/bin/env emacs --script ./format.el"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@platforma-open/milaboratories.over-representation-analysis.software": "workspace:*"
+  },
   "devDependencies": {
     "@platforma-sdk/tengo-builder": "catalog:",
     "@platforma-sdk/workflow-tengo": "catalog:",
     "@platforma-sdk/test": "catalog:",
     "@milaboratories/software-pframes-conv": "catalog:",
     "@platforma-open/milaboratories.software-small-binaries": "catalog:",
+    "": "",
     "vitest": "catalog:"
   }
 }
