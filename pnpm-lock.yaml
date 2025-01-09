@@ -22,25 +22,25 @@ catalogs:
       specifier: ^1.15.6
       version: 1.15.6
     '@platforma-sdk/block-tools':
-      specifier: ^2.5.0
+      specifier: ^2.5.3
       version: 2.5.3
     '@platforma-sdk/model':
-      specifier: ^1.14.1
+      specifier: ^1.21.20
       version: 1.21.20
     '@platforma-sdk/package-builder':
-      specifier: ^2.14.2
+      specifier: ^2.15.0
       version: 2.15.0
     '@platforma-sdk/tengo-builder':
-      specifier: ^1.17.4
+      specifier: ^1.17.5
       version: 1.17.5
     '@platforma-sdk/test':
       specifier: ^1.10.4
       version: 1.21.22
     '@platforma-sdk/ui-vue':
-      specifier: ^1.14.11
-      version: 1.21.23
+      specifier: ^1.21.21
+      version: 1.21.24
     '@platforma-sdk/workflow-tengo':
-      specifier: ^2.9.5
+      specifier: ^2.9.6
       version: 2.9.6
     '@vitejs/plugin-vue':
       specifier: ^5.2.1
@@ -151,7 +151,7 @@ importers:
         version: link:../model
       '@platforma-sdk/ui-vue':
         specifier: 'catalog:'
-        version: 1.21.23(typescript@5.7.3)
+        version: 1.21.24(typescript@5.7.3)
       vue:
         specifier: 'catalog:'
         version: 3.5.13(typescript@5.7.3)
@@ -170,6 +170,10 @@ importers:
         version: 2.2.0(typescript@5.7.3)
 
   workflow:
+    dependencies:
+      '@platforma-open/milaboratories.functional-analysis.software':
+        specifier: workspace:*
+        version: link:../software
     devDependencies:
       '@milaboratories/software-pframes-conv':
         specifier: 'catalog:'
@@ -919,8 +923,8 @@ packages:
   '@milaboratories/ts-helpers@1.1.3':
     resolution: {integrity: sha512-6eBGVodry75ZQlg7n9oPEpDblu/5mHW3Tci7smOt/Nd7IH1zSrZRcNUc18oGY1nj1Vx+Kx+TkVw+9rIgp6HVVg==}
 
-  '@milaboratories/uikit@2.2.46':
-    resolution: {integrity: sha512-x2rbKXNtTIz2PI/MPcTG1FGTdnnq88tBvfSOwxE7fugs25jHQisAGxUwvDgHo5ZdLQnkABLkqdf4hYG7KFB9Eg==}
+  '@milaboratories/uikit@2.2.47':
+    resolution: {integrity: sha512-8WoX0q2uFYuBL9ABbDd/RJ9f7S/98DhR6DcLmeQRsTevazmICDxyEewNz7vUDIXWiQsHFLCMGySc0xpWL26EJw==}
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -1002,8 +1006,8 @@ packages:
   '@platforma-sdk/test@1.21.22':
     resolution: {integrity: sha512-ZtSF0UUBUjZqjFxOtd+AgLrdGaTputoF87q7Yri6G7WzhsTNEREKwnjVsb7lUOdMh/KHPqjbG9oD3gtxSlgjWA==}
 
-  '@platforma-sdk/ui-vue@1.21.23':
-    resolution: {integrity: sha512-xAwI3vwWfn+lgTm9BA1I6455cBDMlqJTRUUAS0m3EyaJl6reNtFl5n7lXVJukeUUSD7LUvI7x1o7frlU1GDdug==}
+  '@platforma-sdk/ui-vue@1.21.24':
+    resolution: {integrity: sha512-6gYVNzRmS6LCvoXMSaSnfTANcvqBINXFfDxSb4eexFFaRoJrlO88OBGZ/z6eefx17vHyaLf2mzjQopvXa0/kPQ==}
 
   '@platforma-sdk/workflow-tengo@2.9.6':
     resolution: {integrity: sha512-8PjlA6zr/7f96i1c9WvkDif2IAvIJtVe40IPzhAQRJNBSBF8VTKUKel6noB1yK/qspS8ikLziFJGOG9FpFVz5Q==}
@@ -4398,8 +4402,8 @@ packages:
   undici-types@6.20.0:
     resolution: {integrity: sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==}
 
-  undici@7.2.0:
-    resolution: {integrity: sha512-klt+0S55GBViA9nsq48/NSCo4YX5mjydjypxD7UmHh/brMu8h/Mhd/F7qAeoH2NOO8SDTk6kjnTFc4WpzmfYpQ==}
+  undici@7.2.1:
+    resolution: {integrity: sha512-U2k0XHLJfaciARRxDcqTk2AZQsGXerHzdvfCZcy1hNhSf5KCAF4jIQQxL+apQviOekhRFPqED6Of5/+LcUSLzQ==}
     engines: {node: '>=20.18.1'}
 
   universalify@0.1.2:
@@ -5586,7 +5590,7 @@ snapshots:
       '@milaboratories/miplots4': 1.0.56(d3-dispatch@3.0.1)(d3-path@3.1.0)(d3-scale-chromatic@3.1.0)
       '@milaboratories/pf-plots': 1.0.65
       '@platforma-sdk/model': 1.21.20
-      '@platforma-sdk/ui-vue': 1.21.23(typescript@5.7.3)
+      '@platforma-sdk/ui-vue': 1.21.24(typescript@5.7.3)
       '@types/d3-hierarchy': 3.1.7
       ag-grid-vue3: 33.0.3(vue@3.5.13(typescript@5.7.3))
       d3-hierarchy: 3.1.2
@@ -5662,7 +5666,7 @@ snapshots:
       https-proxy-agent: 7.0.6
       long: 5.2.3
       lru-cache: 11.0.2
-      undici: 7.2.0
+      undici: 7.2.1
       utility-types: 3.11.0
       yaml: 2.7.0
     transitivePeerDependencies:
@@ -5671,7 +5675,7 @@ snapshots:
   '@milaboratories/pl-config@1.3.3':
     dependencies:
       '@milaboratories/ts-helpers': 1.1.3
-      undici: 7.2.0
+      undici: 7.2.1
       yaml: 2.7.0
       zod: 3.23.8
 
@@ -5689,7 +5693,7 @@ snapshots:
       '@protobuf-ts/runtime-rpc': 2.9.4
       denque: 2.1.0
       tar-fs: 3.0.6
-      undici: 7.2.0
+      undici: 7.2.1
       zod: 3.23.8
     transitivePeerDependencies:
       - supports-color
@@ -5698,7 +5702,7 @@ snapshots:
     dependencies:
       cacheable-lookup: 6.1.0
       https-proxy-agent: 7.0.6
-      undici: 7.2.0
+      undici: 7.2.1
     transitivePeerDependencies:
       - supports-color
 
@@ -5707,7 +5711,7 @@ snapshots:
       '@milaboratories/ts-helpers': 1.1.3
       decompress: 4.2.1
       tar: 7.4.3
-      undici: 7.2.0
+      undici: 7.2.1
       yaml: 2.7.0
       zod: 3.23.8
 
@@ -5733,7 +5737,7 @@ snapshots:
       denque: 2.1.0
       lru-cache: 11.0.2
       quickjs-emscripten: 0.31.0
-      undici: 7.2.0
+      undici: 7.2.1
       utility-types: 3.11.0
       yaml: 2.7.0
       zod: 3.23.8
@@ -5793,7 +5797,7 @@ snapshots:
     dependencies:
       denque: 2.1.0
 
-  '@milaboratories/uikit@2.2.46(typescript@5.7.3)':
+  '@milaboratories/uikit@2.2.47(typescript@5.7.3)':
     dependencies:
       d3: 7.9.0
       vue: 3.5.13(typescript@5.7.3)
@@ -5891,7 +5895,7 @@ snapshots:
       mime-types: 2.1.35
       remeda: 2.19.0
       tar: 7.4.3
-      undici: 7.2.0
+      undici: 7.2.1
       yaml: 2.7.0
       zod: 3.23.8
     transitivePeerDependencies:
@@ -5956,9 +5960,9 @@ snapshots:
       - supports-color
       - terser
 
-  '@platforma-sdk/ui-vue@1.21.23(typescript@5.7.3)':
+  '@platforma-sdk/ui-vue@1.21.24(typescript@5.7.3)':
     dependencies:
-      '@milaboratories/uikit': 2.2.46(typescript@5.7.3)
+      '@milaboratories/uikit': 2.2.47(typescript@5.7.3)
       '@platforma-sdk/model': 1.21.20
       ag-grid-enterprise: 33.0.3
       ag-grid-vue3: 33.0.3(vue@3.5.13(typescript@5.7.3))
@@ -10121,7 +10125,7 @@ snapshots:
 
   undici-types@6.20.0: {}
 
-  undici@7.2.0: {}
+  undici@7.2.1: {}
 
   universalify@0.1.2: {}
 

@@ -3,32 +3,32 @@ packages:
   - workflow
   - model
   - ui
-  - test
   - block
+  - test
 
 catalog:
-  "@platforma-sdk/model": ^1.14.1
-  "@platforma-sdk/ui-vue": ^1.14.11
-  "@platforma-sdk/workflow-tengo": ^2.9.5
-  "@platforma-sdk/block-tools": ^2.5.0
-  "@platforma-sdk/test": ^1.10.4
-  "@platforma-sdk/tengo-builder": ^1.17.4
-  "@platforma-sdk/package-builder": ^2.14.2
-  "@milaboratories/graph-maker": ^1.1.5
-  "@milaboratories/software-pframes-conv": ^2.1.2
+  '@platforma-sdk/model': ^1.21.20
+  '@platforma-sdk/ui-vue': ^1.21.21
+  '@platforma-sdk/workflow-tengo': ^2.9.6
+  '@platforma-sdk/block-tools': ^2.5.3
+  '@platforma-sdk/test': ^1.10.4
+  '@platforma-sdk/tengo-builder': ^1.17.5
+  '@milaboratories/graph-maker': ^1.1.5
+  '@milaboratories/software-pframes-conv': ^2.1.2
 
-  "@platforma-open/milaboratories.software-small-binaries": ^1.15.6
-  "@platforma-open/milaboratories.runenv-r": ^1.2.11
+  '@platforma-open/milaboratories.software-small-binaries': ^1.15.6
+  '@platforma-open/milaboratories.runenv-r': ^1.2.11
+  '@platforma-sdk/package-builder': ^2.15.0
 
-  "vue": ^3.5.13
-  "vue-tsc": ^2.1.10
+  'vue': ^3.5.13
+  'vue-tsc': ^2.1.10
 
-  "typescript": ^5.6.3
-  "tsup": ~8.3.5
-  "turbo": ^2.3.3
+  'typescript': ^5.6.3
+  'tsup': ~8.3.5
+  'turbo': ^2.3.3
 
-  "vite": ^5.4.11
-  "vitest": ^2.1.6
-  "@vitejs/plugin-vue": ^5.2.1
+  'vite': ^5.4.11
+  'vitest': ^2.1.6
+  '@vitejs/plugin-vue': ^5.2.1
 
-  "@changesets/cli": ^2.27.10
+  '@changesets/cli': ^2.27.10
