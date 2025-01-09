@@ -1,0 +1,67 @@
+ll := import("@platforma-sdk/workflow-tengo:ll")
+
+getColumns := func(inputSpec) {
+	return {
+		"axes": [
+			{
+				"column": "ID",
+				"spec": {
+					"name": "pl7.app/rna-seq/pathwayid",
+					"valueType": "String",
+					"annotations": {
+						"pl7.app/label": "Pathway ID",
+						"pl7.app/contrast": inputSpec.annotations["pl7.app/label"],
+						"pl7.app/table/orderPriority": "80"
+					}
+			}
+			}
+			],
+		"columns": [
+			{
+				"column": "Description",
+				"id": "pathwayname",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/pathwayname",
+					"valueType": "String",
+					"annotations": {
+						"pl7.app/label": "Description",
+						"pl7.app/table/orderPriority": "70"
+					}
+				}
+			},
+			{
+				"column": "zScore",
+				"id": "zscore",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/zscore",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "Z score",
+						"pl7.app/table/orderPriority": "60"
+					}
+				}
+			},
+			{
+				"column": "p.adjust",
+				"id": "padj",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/padj",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "Adjusted p-value",
+						"pl7.app/table/orderPriority": "50"
+					}
+				}
+			}
+			],
+		"storageFormat": "Binary",
+		"partitionKeyLength": 0
+	}
+}
+
+export ll.toStrict({
+	getColumns: getColumns
+})

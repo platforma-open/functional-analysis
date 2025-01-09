@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PlAgDataTable, PlAlert, PlBlockPage, PlBtnGhost, PlDataTableSettings, PlDropdown, PlDropdownRef, PlMaskIcon24, PlSlideModal, PlTextField } from '@platforma-sdk/ui-vue';
+import { PlAlert, PlBlockPage, PlDataTableSettings, PlTextField } from '@platforma-sdk/ui-vue';
 import { useApp } from '../app';
 import { computed, ref } from 'vue';
 

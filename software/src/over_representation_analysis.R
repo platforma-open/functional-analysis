@@ -146,7 +146,7 @@ runORA <- function() {
   
   # Save results
   input_dir <- dirname(opt$input)
-  results_file <- file.path(input_dir, paste0("ORA_results_", gsub(" ", "_", opt$pathway_collection), "_", opt$species, ".csv"))
+  results_file <- file.path(input_dir, "pathwayEnrichmentResults.csv")
   write.csv(as.data.frame(ora_results), results_file, row.names = FALSE)
   
   message(paste("Analysis completed. Results are saved in", results_file))

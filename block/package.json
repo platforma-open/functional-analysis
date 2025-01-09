@@ -20,7 +20,7 @@
       "ui": "@platforma-open/milaboratories.functional-analysis.ui/dist"
     },
     "meta": {
-      "title": "Block Title",
+      "title": "Functional Analysis",
       "logo": "file:../logos/block-logo.png",
       "url": "https://github.com/milaboratory/platforma-functional-analysis",
       "docs": "https://github.com/milaboratory/platforma-functional-analysis/docs",
