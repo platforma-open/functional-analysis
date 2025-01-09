@@ -1,0 +1,30 @@
+// "hello world"
+wf := import("@platforma-sdk/workflow-tengo:workflow")
+exec := import("@platforma-sdk/workflow-tengo:exec")
+
+wf.prepare(func(args){
+	return{
+		resolvedInput: wf.resolve(args.geneListRef, { errIfMissing: true })
+	}
+})
+
+wf.body(func(args) {
+
+	blockId := wf.blockId().getDataAsJson()
+	input := args.resolvedInput
+	inputSpec := input.spec
+
+	species := inputSpec.domain["pl7.app/species"]
+	pathwayCollection := args.pathwayCollection
+
+	tengoMessage := species + pathwayCollection
+
+	return {
+		outputs: {
+			tengoMessage: tengoMessage
+		},
+
+		exports: {}
+	}
+})
+
