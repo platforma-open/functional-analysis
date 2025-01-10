@@ -4,6 +4,7 @@ dist/
 block-pack/
 dev/
 work/
+renv/
 log/
 .turbo
 vite.config.*.timestamp-*
