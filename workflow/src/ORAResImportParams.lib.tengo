@@ -5,9 +5,14 @@ getColumns := func(inputSpec) {
 		"axes": [
 			{
 				"column": "ID",
+				// "id": "pathwayid",
+				// "allowNA": true,
 				"spec": {
 					"name": "pl7.app/rna-seq/pathwayid",
-					"valueType": "String",
+					"type": "String",
+					"domain": {
+						"pl7.app/species": inputSpec.domain["pl7.app/species"]
+					},
 					"annotations": {
 						"pl7.app/label": "Pathway ID",
 						"pl7.app/contrast": inputSpec.annotations["pl7.app/label"],
