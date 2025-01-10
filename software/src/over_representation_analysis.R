@@ -1,21 +1,24 @@
 #!/usr/bin/env Rscript
 
-# Load necessary libraries
-library(clusterProfiler)
-library(AnnotationDbi)
-library(ReactomePA)
-library(optparse)
-library(org.Hs.eg.db)  # Human
-library(org.Mm.eg.db)  # Mouse
-library(org.Rn.eg.db)  # Rat
-library(org.Dr.eg.db)  # Zebrafish
-library(org.Dm.eg.db)  # Drosophila
-library(org.At.tair.db)  # Arabidopsis
-library(org.Sc.sgd.db)  # Yeast
-library(org.Ce.eg.db)  # C. elegans
-library(org.Gg.eg.db)  # Chicken
-library(org.Bt.eg.db)  # Cow
-library(org.Ss.eg.db)  # Pig
+# Install and load necessary libraries
+
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager", repos = "https://cloud.r-project.org")
+}
+
+required_packages <- c(
+  "clusterProfiler", "AnnotationDbi", "ReactomePA", "optparse",
+  "org.Hs.eg.db", "org.Mm.eg.db", "org.Rn.eg.db", "org.Dr.eg.db", 
+  "org.Dm.eg.db", "org.At.tair.db", "org.Sc.sgd.db", "org.Ce.eg.db",
+  "org.Gg.eg.db", "org.Bt.eg.db", "org.Ss.eg.db"
+)
+
+for (pkg in required_packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+    BiocManager::install(pkg, ask = FALSE)
+  }
+  library(pkg, character.only = TRUE)
+}
 
 # Set up command line options
 option_list <- list(
