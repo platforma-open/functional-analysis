@@ -1,0 +1,43 @@
+{
+  "name": "@platforma-open/milaboratories.functional-analysis",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "rm -rf block-pack/* && block-tools pack"
+  },
+  "files": [
+    "index.d.ts",
+    "index.js"
+  ],
+  "dependencies": {
+    "@platforma-open/milaboratories.functional-analysis.workflow": "workspace:*",
+    "@platforma-open/milaboratories.functional-analysis.model": "workspace:*",
+    "@platforma-open/milaboratories.functional-analysis.ui": "workspace:*"
+  },
+  "block": {
+    "components": {
+      "workflow": "@platforma-open/milaboratories.functional-analysis.workflow/dist/tengo/tpl/main.plj.gz",
+      "model": "@platforma-open/milaboratories.functional-analysis.model/dist/model.json",
+      "ui": "@platforma-open/milaboratories.functional-analysis.ui/dist"
+    },
+    "meta": {
+      "title": "Functional Analysis",
+      "logo": "file:../logos/block-logo.png",
+      "url": "https://github.com/milaboratory/platforma-functional-analysis",
+      "docs": "https://github.com/milaboratory/platforma-functional-analysis/docs",
+      "support": "mailto:support@milaboratories.com",
+      "description": "Performs pathway enrichment on a set of genes.",
+      "longDescription": "file:../docs/description.md",
+      "changelog": "file:../CHANGELOG.md",
+      "tags": ["rna-seq", "downstream"],
+      "organization": {
+        "name": "MiLaboratories Inc",
+        "url": "https://milaboratories.com/",
+        "logo": "file:../logos/milaboratories.png"
+      }
+    }
+  },
+  "devDependencies": {
+    "@platforma-sdk/block-tools": "catalog:"
+  },
+  "packageManager": "pnpm@9.12.0"
+}

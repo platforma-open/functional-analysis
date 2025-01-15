@@ -1,0 +1,37 @@
+{
+  "name": "@platforma-open/milaboratories.functional-analysis.software",
+  "version": "1.0.1",
+  "type": "module",
+  "description": "Block Software: Run Pathway Enrichment with R",
+  "scripts": {
+    "build": "pl-pkg build",
+    "test": "true",
+    "prepublishOnly": "pl-pkg publish"
+  },
+  "block-software": {
+    "entrypoints": {
+      "over-representation-analysis": {
+        "binary": {
+          "artifact": {
+            "type": "R",
+            "registry": "platforma-open",
+            "environment": "@platforma-open/milaboratories.runenv-r:4.4.1",
+            "dependencies": {
+              "toolset": "renv",
+              "lockFile": "renv.lock"
+            },
+            "root": "./src"
+          },
+          "cmd": [
+            "Rscript",
+            "{pkg}/over_representation_analysis.R"
+          ]
+        }
+      }
+    }
+  },
+  "devDependencies": {
+    "@platforma-open/milaboratories.runenv-r": "catalog:",
+    "@platforma-sdk/package-builder": "catalog:"
+  }
+}
