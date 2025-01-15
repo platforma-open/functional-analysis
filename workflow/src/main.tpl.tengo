@@ -31,6 +31,7 @@ wf.body(func(args) {
 		arg("--species").arg(species).
 		addFile("geneList.csv", csvGeneList).
 		saveFile("pathwayEnrichmentResults.csv").
+		saveFile("top10PathwayEnrichmentResults.csv").
 		printErrStreamToStdout().
 		saveStdoutContent().
 		cache(24 * 60 * 60 * 1000).
@@ -38,11 +39,12 @@ wf.body(func(args) {
 
 	ORAResImportParams := ORAResPfconvParamsLib.getColumns(inputSpec)
 	ORAPf := xsv.importFile(ORA.getFile("pathwayEnrichmentResults.csv"), "csv", ORAResImportParams)
-
+	ORATop10Pf := xsv.importFile(ORA.getFile("top10PathwayEnrichmentResults.csv"), "csv", ORAResImportParams)
 
 	return {
 		outputs: {
-			ORAPf: pframes.exportFrame(ORAPf)
+			ORAPf: pframes.exportFrame(ORAPf),
+			ORATop10Pf: pframes.exportFrame(ORATop10Pf)
 		},
 
 		exports: {}

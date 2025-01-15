@@ -59,8 +59,8 @@ export const model = BlockModel.create()
     return createPlDataTable(ctx, pCols, ctx.uiState?.tableState);
   })
 
-  .output('ORAPf', (ctx): PFrameHandle | undefined => {
-    const pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
+  .output('ORATop10Pf', (ctx): PFrameHandle | undefined => {
+    const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }

@@ -1,7 +1,6 @@
 #!/usr/bin/env Rscript
 
 # Install and load necessary libraries
-
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
   install.packages("BiocManager", repos = "https://cloud.r-project.org")
 }
@@ -48,7 +47,8 @@ mapSpecies <- function(speciesAbbr, collection) {
       "caenorhabditis-elegans" = "org.Ce.eg.db",
       "gallus-gallus" = "org.Gg.eg.db",
       "bos-taurus" = "org.Bt.eg.db",
-      "sus-scrofa" = "org.Ss.eg.db"
+      "sus-scrofa" = "org.Ss.eg.db",
+      "test-species" = "org.Mm.eg.db"
     ),
     "Reactome" = list(
       "homo-sapiens" = "human",
@@ -61,7 +61,8 @@ mapSpecies <- function(speciesAbbr, collection) {
       "caenorhabditis-elegans" = "celegans",
       "gallus-gallus" = "chicken",
       "bos-taurus" = "cow",
-      "sus-scrofa" = "pig"
+      "sus-scrofa" = "pig",
+      "test-species" = "mouse"
     ),
     "WikiPathways" = list(
       "homo-sapiens" = "Homo sapiens",
@@ -74,7 +75,8 @@ mapSpecies <- function(speciesAbbr, collection) {
       "caenorhabditis-elegans" = "Caenorhabditis elegans",
       "gallus-gallus" = "Gallus gallus",
       "bos-taurus" = "Bos taurus",
-      "sus-scrofa" = "Sus scrofa"
+      "sus-scrofa" = "Sus scrofa",
+      "test-species" = "Mus musculus"
     ),
     "KEGG" = list(
       "homo-sapiens" = "hsa",
@@ -87,7 +89,8 @@ mapSpecies <- function(speciesAbbr, collection) {
       "caenorhabditis-elegans" = "cel",
       "gallus-gallus" = "gga",
       "bos-taurus" = "bta",
-      "sus-scrofa" = "ssc"
+      "sus-scrofa" = "ssc",
+      "test-species" = "mmu"
     )
   )
   return(mappings[[collection]][[speciesAbbr]])
@@ -117,40 +120,84 @@ runORA <- function() {
   gene_data <- read.csv(opt$input)
   
   # Map Ensembl IDs to Entrez IDs
-  gene_data$EntrezId <- convertEnsemblToEntrez(as.character(gene_data$EnsemblId), opt$species)
+  gene_data$EntrezId <- convertEnsemblToEntrez(as.character(gene_data$Ensembl.Id), opt$species)
   gene_data <- gene_data[!is.na(gene_data$EntrezId), ]
   gene_ids <- as.character(gene_data$EntrezId)
   
-  # Load the appropriate OrgDb
-  orgDb <- getOrgDb(opt$species, "GO")
-  background_genes <- keys(orgDb, keytype = "ENTREZID")
+  # Set species mapping for pathway collection
+  species_for_collection <- mapSpecies(opt$species, opt$pathway_collection)
+  background_genes <- keys(getOrgDb(opt$species, "GO"), keytype = "ENTREZID")
   
   # Debugging info
   print(paste("Number of input genes:", length(gene_ids)))
   print(paste("Number of background genes:", length(background_genes)))
   
-  # Perform enrichment analysis
-  ora_results <- enrichGO(
-    gene = gene_ids,
-    OrgDb = orgDb,
-    keyType = "ENTREZID",
-    universe = background_genes,
-    ont = "ALL",
-    pvalueCutoff = 0.05,
-    qvalueCutoff = 0.2,
-    minGSSize = 10
+# Perform enrichment analysis based on pathway collection
+  ora_results <- switch(
+    tolower(opt$pathway_collection),
+    "go" = enrichGO(
+      gene = gene_ids,
+      OrgDb = getOrgDb(opt$species, "GO"),
+      keyType = "ENTREZID",
+      universe = background_genes,
+      ont = "ALL",
+      pvalueCutoff = 0.05,
+      qvalueCutoff = 0.2
+    ),
+    "kegg" = enrichKEGG(
+      gene = gene_ids,
+      organism = species_for_collection,
+      keyType = "kegg",
+      universe = background_genes,  # Add universe
+      pvalueCutoff = 0.05,
+      use_internal_data = TRUE
+    ),
+    "reactome" = enrichPathway(
+      gene = gene_ids,
+      organism = species_for_collection,
+      universe = background_genes,  # Add universe
+      pvalueCutoff = 0.05,
+      qvalueCutoff = 0.2
+    ),
+    "wikipathways" = enrichWP(
+      gene = gene_ids,
+      organism = species_for_collection,
+      pvalueCutoff = 0.05
+    ),
+    stop("Invalid pathway collection specified.")
   )
   
   # Check if results exist
+  input_dir <- dirname(opt$input)
+  results_file <- file.path(input_dir, "pathwayEnrichmentResults.csv")
+  top10_results_file <- file.path(input_dir, "top10PathwayEnrichmentResults.csv")
+
   if (is.null(ora_results) || nrow(as.data.frame(ora_results)) == 0) {
     message("No significant pathways found or analysis could not be performed.")
+    
+    # Define placeholder column names
+    placeholder_columns <- c("ONTOLOGY", "ID", "Description", "zScore", "GeneRatio", "BgRatio", 
+                             "pvalue", "p.adjust", "qvalue", "geneID", "Count")
+    
+    # Create a placeholder data frame
+    placeholder_df <- as.data.frame(matrix(ncol = length(placeholder_columns), nrow = 1))
+    colnames(placeholder_df) <- placeholder_columns
+    placeholder_df[1, 2] <- "No significant pathways found or analysis could not be performed."
+    
+    # Save the placeholder CSV file
+    write.csv(placeholder_df, results_file, row.names = FALSE)
+    write.csv(placeholder_df, top10_results_file, row.names = FALSE)
+    
+    message(paste("An empty results file has been created at", results_file))
     return(invisible())
   }
   
   # Save results
-  input_dir <- dirname(opt$input)
-  results_file <- file.path(input_dir, "pathwayEnrichmentResults.csv")
   write.csv(as.data.frame(ora_results), results_file, row.names = FALSE)
+
+  # Save the top 10 results by p.adjust
+  top10_results <- head(as.data.frame(ora_results[order(ora_results$p.adjust), ]), 10)
+  write.csv(top10_results, top10_results_file, row.names = FALSE)
   
   message(paste("Analysis completed. Results are saved in", results_file))
 }

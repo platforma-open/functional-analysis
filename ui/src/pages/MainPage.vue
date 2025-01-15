@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PlAgDataTable, PlAlert, PlBlockPage, PlBtnGhost, PlDataTableSettings, PlDropdown, PlDropdownRef, PlMaskIcon24, PlSlideModal, PlTextField } from '@platforma-sdk/ui-vue';
+import { PlAgDataTable, PlBlockPage, PlBtnGhost, PlDataTableSettings, PlDropdown, PlDropdownRef, PlMaskIcon24, PlSlideModal, PlTextField } from '@platforma-sdk/ui-vue';
 import { useApp } from '../app';
 import { computed, ref } from 'vue';
 
@@ -18,8 +18,8 @@ const showSettings = () => { settingsAreShown.value = true }
 const pathwayCollectionOptions = [
   { text: "Gene Ontology (GO)", value: "GO" },
   { text: "Reactome (RA)", value: "Reactome" },
-  { text: "WikiPathways (WP)", value: "WikiPathways" },
-  { text: "Kyoto Encyclopedia of Genes and Genomes (KEGG)", value: "KEGG" },
+  // { text: "WikiPathways (WP)", value: "WikiPathways" },
+  // { text: "Kyoto Encyclopedia of Genes and Genomes (KEGG)", value: "KEGG" },
 ];
 
 </script>
