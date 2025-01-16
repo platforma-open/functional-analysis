@@ -1,6 +1,6 @@
 {
   "name": "@platforma-open/milaboratories.functional-analysis",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "build": "rm -rf block-pack/* && block-tools pack"
   },
@@ -28,7 +28,10 @@
       "description": "Performs pathway enrichment on a set of genes.",
       "longDescription": "file:../docs/description.md",
       "changelog": "file:./CHANGELOG.md",
-      "tags": ["rna-seq", "downstream"],
+      "tags": [
+        "rna-seq",
+        "downstream"
+      ],
       "organization": {
         "name": "MiLaboratories Inc",
         "url": "https://milaboratories.com/",
