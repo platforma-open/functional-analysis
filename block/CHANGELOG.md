@@ -1,5 +1,14 @@
 ## 1.0.0
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies [8ee5d36]
+  - @platforma-open/milaboratories.functional-analysis.workflow@1.1.0
+  - @platforma-open/milaboratories.functional-analysis.model@1.1.0
+  - @platforma-open/milaboratories.functional-analysis.ui@1.1.0
+
 ## 1.0.2
 
 ### Patch Changes
