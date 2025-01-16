@@ -10,7 +10,7 @@ const defaultOptions: GraphMakerProps['defaultOptions'] = [
     inputName: 'y',
     selectedSource: {
       kind: 'PColumn',
-      name: "pl7.app/rna-seq/padj",
+      name: "pl7.app/rna-seq/minlog10padj",
       valueType: "Double",
       axesSpec: [
         {
@@ -25,7 +25,7 @@ const defaultOptions: GraphMakerProps['defaultOptions'] = [
     selectedSource: {
       kind: 'PColumn',
       name: "pl7.app/rna-seq/pathwayname",
-      valueType: "Double",
+      valueType: "String",
       axesSpec: [
         {
           name: "pl7.app/pathwayid",

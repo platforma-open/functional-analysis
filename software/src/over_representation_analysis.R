@@ -177,7 +177,7 @@ runORA <- function() {
     
     # Define placeholder column names
     placeholder_columns <- c("ONTOLOGY", "ID", "Description", "zScore", "GeneRatio", "BgRatio", 
-                             "pvalue", "p.adjust", "qvalue", "geneID", "Count")
+                             "pvalue", "p.adjust", "qvalue", "geneID", "Count", "-log10(p.adjust)")
     
     # Create a placeholder data frame
     placeholder_df <- as.data.frame(matrix(ncol = length(placeholder_columns), nrow = 1))
@@ -192,11 +192,15 @@ runORA <- function() {
     return(invisible())
   }
   
+  # Add -log10(p.adjust) column
+  enriched_results <- as.data.frame(ora_results)
+  enriched_results$`minlog10padj` <- -log10(enriched_results$p.adjust)
+
   # Save results
-  write.csv(as.data.frame(ora_results), results_file, row.names = FALSE)
+  write.csv(as.data.frame(enriched_results), results_file, row.names = FALSE)
 
   # Save the top 10 results by p.adjust
-  top10_results <- head(as.data.frame(ora_results[order(ora_results$p.adjust), ]), 10)
+  top10_results <- head(as.data.frame(enriched_results[order(enriched_results$p.adjust), ]), 10)
   write.csv(top10_results, top10_results_file, row.names = FALSE)
   
   message(paste("Analysis completed. Results are saved in", results_file))
