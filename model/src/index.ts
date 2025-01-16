@@ -37,7 +37,12 @@ export const model = BlockModel.create()
     },
     graphState: {
       title: 'Enriched pathways',
-      template: 'bar'
+      template: 'bar',
+      axesSettings: {
+        other: {
+          reverse: true
+        }
+      } as Partial<GraphMakerState['axesSettings']>
     }
   })
 

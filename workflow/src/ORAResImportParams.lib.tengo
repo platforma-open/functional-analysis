@@ -60,6 +60,19 @@ getColumns := func(inputSpec) {
 						"pl7.app/table/orderPriority": "50"
 					}
 				}
+			},
+			{
+				"column": "minlog10padj",
+				"id": "minlog10padj",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/minlog10padj",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "-log10 adjusted p-value",
+						"pl7.app/table/orderPriority": "40"
+					}
+				}
 			}
 			],
 		"storageFormat": "Binary",
