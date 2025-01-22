@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.software
 
+## 1.2.0
+
+### Minor Changes
+
+- 252742f: MILAB-1152: update runenv-r to 4.4.2
+
 ## 1.1.3
 
 ### Patch Changes
