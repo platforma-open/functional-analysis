@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.software
 
+## 1.1.2
+
+### Patch Changes
+
+- b8e381e: MILAB-1152: update changeset
+
 ## 1.1.1
 
 ### Patch Changes
