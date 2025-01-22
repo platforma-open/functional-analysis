@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.software
 
+## 1.1.3
+
+### Patch Changes
+
+- 49d36d7: MILAB-1152: update renv.lock file
+
 ## 1.1.2
 
 ### Patch Changes
