@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.software
 
+## 1.2.2
+
+### Patch Changes
+
+- 0edc182: MILAB-1152: update deps and renv.lock
+
 ## 1.2.1
 
 ### Patch Changes
