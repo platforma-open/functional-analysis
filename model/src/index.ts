@@ -47,7 +47,7 @@ export const model = BlockModel.create()
   })
 
   .output('geneListOptions', (ctx) =>
-    ctx.resultPool.getOptions((spec) => isPColumnSpec(spec) && spec.name === 'DEG')
+    ctx.resultPool.getOptions((spec) => isPColumnSpec(spec) && spec.name === 'pl7.app/rna-seq/DEG')
   )
 
   .output('datasetSpec', (ctx) => {
