@@ -1,5 +1,11 @@
 ## 1.0.0
 
+## 1.0.11
+
+### Patch Changes
+
+- @platforma-open/milaboratories.functional-analysis.workflow@1.1.7
+
 ## 1.0.10
 
 ### Patch Changes

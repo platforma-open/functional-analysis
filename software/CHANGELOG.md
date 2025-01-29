@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.software
 
+## 1.2.3
+
+### Patch Changes
+
+- 22d7b54: chore: update runenv-r deps
+
 ## 1.2.2
 
 ### Patch Changes
