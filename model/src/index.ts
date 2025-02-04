@@ -46,8 +46,14 @@ export const model = BlockModel.create()
     }
   })
 
+  // User can only select as input DEG lists
+  // includeNativeLabel ensures DEG pl7.app/label (native label, '...(log2FC)')
+  // is also visible in selection (by default we only see Samples & data ID)
+  // addLabelAsSuffix moves the native label to the end
+  // Result: [dataID] / ...(log2FC)
   .output('geneListOptions', (ctx) =>
-    ctx.resultPool.getOptions((spec) => isPColumnSpec(spec) && spec.name === 'pl7.app/rna-seq/DEG')
+    ctx.resultPool.getOptions((spec) => isPColumnSpec(spec) && spec.name === 'pl7.app/rna-seq/DEG',
+                              {includeNativeLabel: true, addLabelAsSuffix:true})
   )
 
   .output('datasetSpec', (ctx) => {
