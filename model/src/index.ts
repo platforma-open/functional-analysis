@@ -2,9 +2,11 @@ import { GraphMakerState } from '@milaboratories/graph-maker';
 import { 
   BlockModel, 
   createPlDataTable, 
+  getUniquePartitionKeys, 
   InferOutputsType, 
   isPColumn, 
   isPColumnSpec, 
+  PColumn, 
   PFrameHandle, 
   PlDataTableState, 
   PlRef, 
@@ -19,12 +21,14 @@ export type UiState = {
 export type BlockArgs = {
   geneListRef?: PlRef;
   pathwayCollection?: string;
+  geneSubset: string[];
 };
 
 export const model = BlockModel.create()
 
   .withArgs<BlockArgs>({
-    pathwayCollection: "GO"
+    pathwayCollection: "GO",
+    geneSubset: ['Up', 'Down'],
   })
 
   .withUiState<UiState>({
@@ -46,13 +50,17 @@ export const model = BlockModel.create()
     }
   })
 
-  // User can only select as input DEG lists
-  // includeNativeLabel ensures DEG pl7.app/label (native label, '...(log2FC)')
+  // Activate "Run" button only after input DEG list is selected
+  .argsValid((ctx) =>  (ctx.args.geneListRef !== undefined) &&
+                      (ctx.args.geneSubset.length !== 0))
+
+  // User can only select as input regulationDirection lists
+  // includeNativeLabel ensures regulationDirection pl7.app/label
   // is also visible in selection (by default we only see Samples & data ID)
   // addLabelAsSuffix moves the native label to the end
-  // Result: [dataID] / ...(log2FC)
+  // Result: [dataID] / A vs B
   .output('geneListOptions', (ctx) =>
-    ctx.resultPool.getOptions((spec) => isPColumnSpec(spec) && spec.name === 'pl7.app/rna-seq/DEG',
+    ctx.resultPool.getOptions((spec) => isPColumnSpec(spec) && spec.name === 'pl7.app/rna-seq/regulationDirection',
                               {includeNativeLabel: true, addLabelAsSuffix:true})
   )
 
@@ -70,6 +78,31 @@ export const model = BlockModel.create()
     return createPlDataTable(ctx, pCols, ctx.uiState?.tableState);
   })
 
+  .output('test', (ctx) => {
+    if (ctx.args.geneListRef === undefined) {
+      return undefined
+    }
+    const anchorColumn = ctx.resultPool.getPColumnByRef(ctx.args?.geneListRef);
+    return anchorColumn
+
+  })
+
+  .output('test2', (ctx) => {
+    const moreColumns = ctx.resultPool
+      .getData()
+      .entries.map((o) => o.obj)
+      .filter(isPColumn)
+      .filter((col) => {
+        if (
+          col.spec.name === 'pl7.app/rna-seq/regulationDirection'
+        ) {
+          return true;
+        }
+        return false;
+      });
+      return moreColumns;
+
+  })
   .output('ORATop10Pf', (ctx): PFrameHandle | undefined => {
     const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
     if (pCols === undefined) {
@@ -86,6 +119,27 @@ export const model = BlockModel.create()
 
     return ctx.createPFrame([...pCols, ...upstream]);
   })
+
+  // .output('ORATop10PfSpec', (ctx) => {
+  //   const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
+  //   if (pCols === undefined) {
+  //     return undefined;
+  //   }
+
+  //   const anchor = pCols[0];
+  //   if (!anchor) return undefined;
+
+  //   const r = getUniquePartitionKeys(anchor.data);
+  //   if (!r) return undefined;
+
+  //   // for the table purposes, we set "pl7.app/axisNature": "heterogeneous" on gene axis
+  //   if (pCols.length !== 1) {
+  //     throw Error('unexpected number of columns');
+  //   }
+
+  //   return pCols[0];
+
+  // })
 
   .sections([
     { type: 'link', href: '/', label: 'Table' },

@@ -16,7 +16,7 @@ for (pkg in required_packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
     BiocManager::install(pkg, ask = FALSE)
   }
-  library(pkg, character.only = TRUE)
+  suppressPackageStartupMessages(library(pkg, character.only = TRUE))
 }
 
 # Set up command line options
@@ -26,12 +26,22 @@ option_list <- list(
   make_option(c("-p", "--pathway_collection"), type = "character", default = "GO", 
               help = "Pathway collection: GO, Reactome, WikiPathways, KEGG", metavar = "type"),
   make_option(c("-s", "--species"), type = "character", default = "homo-sapiens", 
-              help = "Species (e.g., homo-sapiens for Homo sapiens)", metavar = "abbr")
+              help = "Species (e.g., homo-sapiens for Homo sapiens)", metavar = "abbr"),
+  make_option(c("-g", "--gene_subset"), type = "character", default = "Up_Down", 
+              help = "Gene subsets for functional enrichment (e.g., Up, Down, DEGs). To select \
+              more than one option join them in the same string with '_' as separator")
 )
 
 # Parse command line arguments
 opt_parser <- OptionParser(option_list = option_list)
 opt <- parse_args(opt_parser)
+
+# Gene subset naming converter
+subset_naming <- c(
+  "Up" = "Upregulated",
+  "Down" = "Downregulated",
+  "DEGs" = "Dysregulated (all DEGs)"
+)
 
 # Species mapping function
 mapSpecies <- function(speciesAbbr, collection) {
@@ -116,23 +126,23 @@ getOrgDb <- function(species, collection) {
 }
 
 # Main function to perform over-representation analysis
-runORA <- function() {
-  gene_data <- read.csv(opt$input)
-  
+runORA <- function(trend_data, dir_label) {
+  print(paste("Running enrichment analysis for genes with following trend: ", dir_label))
+
   # Map Ensembl IDs to Entrez IDs
-  gene_data$EntrezId <- convertEnsemblToEntrez(as.character(gene_data$Ensembl.Id), opt$species)
-  gene_data <- gene_data[!is.na(gene_data$EntrezId), ]
-  gene_ids <- as.character(gene_data$EntrezId)
+  trend_data$EntrezId <- convertEnsemblToEntrez(as.character(trend_data$Ensembl.Id), opt$species)
+  trend_data <- trend_data[!is.na(trend_data$EntrezId), ]
+  gene_ids <- as.character(trend_data$EntrezId)
   
   # Set species mapping for pathway collection
   species_for_collection <- mapSpecies(opt$species, opt$pathway_collection)
   background_genes <- keys(getOrgDb(opt$species, "GO"), keytype = "ENTREZID")
   
   # Debugging info
-  print(paste("Number of input genes:", length(gene_ids)))
-  print(paste("Number of background genes:", length(background_genes)))
+  print(paste("Number of", dir_label, "input genes:", length(gene_ids)))
+  print(paste("Number of", dir_label, "background genes:", length(background_genes)))
   
-# Perform enrichment analysis based on pathway collection
+  # Perform enrichment analysis based on pathway collection
   ora_results <- switch(
     tolower(opt$pathway_collection),
     "go" = enrichGO(
@@ -167,44 +177,70 @@ runORA <- function() {
     stop("Invalid pathway collection specified.")
   )
   
-  # Check if results exist
-  input_dir <- dirname(opt$input)
-  results_file <- file.path(input_dir, "pathwayEnrichmentResults.csv")
-  top10_results_file <- file.path(input_dir, "top10PathwayEnrichmentResults.csv")
-
   if (is.null(ora_results) || nrow(as.data.frame(ora_results)) == 0) {
     message("No significant pathways found or analysis could not be performed.")
     
     # Define placeholder column names
-    placeholder_columns <- c("ONTOLOGY", "ID", "Description", "zScore", "GeneRatio", "BgRatio", 
-                             "pvalue", "p.adjust", "qvalue", "geneID", "Count", "-log10(p.adjust)")
+    placeholder_columns <- c("ONTOLOGY", "ID", "Description", "GeneRatio",
+                            "BgRatio", "RichFactor", "FoldEnrichment", "zScore",
+                            "pvalue", "p.adjust", "qvalue", "geneID", "Count",
+                            "minlog10padj")
     
-    # Create a placeholder data frame
-    placeholder_df <- as.data.frame(matrix(ncol = length(placeholder_columns), nrow = 1))
+    # Create a placeholder empty data frame
+    placeholder_df <- as.data.frame(matrix(ncol = length(placeholder_columns), nrow = 0))
     colnames(placeholder_df) <- placeholder_columns
-    placeholder_df[1, 2] <- "No significant pathways found or analysis could not be performed."
     
-    # Save the placeholder CSV file
-    write.csv(placeholder_df, results_file, row.names = FALSE)
-    write.csv(placeholder_df, top10_results_file, row.names = FALSE)
-    
-    message(paste("An empty results file has been created at", results_file))
-    return(invisible())
+    return(placeholder_df)
   }
   
   # Add -log10(p.adjust) column
   enriched_results <- as.data.frame(ora_results)
   enriched_results$`minlog10padj` <- -log10(enriched_results$p.adjust)
 
-  # Save results
-  write.csv(as.data.frame(enriched_results), results_file, row.names = FALSE)
-
-  # Save the top 10 results by p.adjust
-  top10_results <- head(as.data.frame(enriched_results[order(enriched_results$p.adjust), ]), 10)
-  write.csv(top10_results, top10_results_file, row.names = FALSE)
-  
-  message(paste("Analysis completed. Results are saved in", results_file))
+  return(enriched_results)
 }
 
-# Run the analysis
-runORA()
+# Load input data table
+gene_data <- read.csv(opt$input)
+# Get list of interest subsets
+subsets <- sort(strsplit(opt$gene_subset, '_')[[1]])
+
+enriched_results <- data.frame()
+top10_results <- data.frame()
+for (subs in subsets) {
+  # Get list of genes with selected FC trend direction
+  if (subs == "DEGs") {
+    pos <- gene_data[,2] %in% c("Up", "Down")
+  } else {
+    pos <- gene_data[,2] == subs
+  }
+  trend_data <- gene_data[pos, ,drop = FALSE]
+
+  # Run the analysis for specific subset
+  df <- runORA(trend_data, dir_label=subs)
+  df["regDirection"] <- toString(subset_naming[subs])
+
+  # Combine all results in the same dataframe
+  enriched_results <- rbind(enriched_results, df)
+
+  # Combine top results in same table
+  top10_results <- rbind(top10_results, 
+                          head(as.data.frame(df[order(df$p.adjust), ]), 10))
+}
+
+# Define output file paths
+input_dir <- dirname(opt$input)
+results_file <- file.path(input_dir, 
+                        paste0("pathwayEnrichmentResults.csv"))
+top10_results_file <- file.path(input_dir, 
+                        paste0("top10PathwayEnrichmentResults.csv"))
+# Save all results
+write.csv(as.data.frame(enriched_results), results_file, row.names = FALSE)
+  # Save the top 10 results by p.adjust
+  # Save the top 10 results by p.adjust
+  top10_results <- head(as.data.frame(enriched_results[order(enriched_results$p.adjust), ]), 10)
+# Save the top 10 results by p.adjust
+  top10_results <- head(as.data.frame(enriched_results[order(enriched_results$p.adjust), ]), 10)
+write.csv(top10_results, top10_results_file, row.names = FALSE)
+
+message(paste("Analysis completed. Results are saved in", results_file))

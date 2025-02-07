@@ -16,12 +16,25 @@ getColumns := func(inputSpec) {
 					"annotations": {
 						"pl7.app/label": "Pathway ID",
 						"pl7.app/contrast": inputSpec.annotations["pl7.app/label"],
-						"pl7.app/table/orderPriority": "80"
+						"pl7.app/table/orderPriority": "90"
 					}
 			}
 			}
 			],
 		"columns": [
+			{
+				"column": "ONTOLOGY",
+				"id": "ontology",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/pathwayOntology",
+					"valueType": "String",
+					"annotations": {
+						"pl7.app/label": "Ontology",
+						"pl7.app/table/orderPriority": "80"
+					}
+				}
+			},
 			{
 				"column": "Description",
 				"id": "pathwayname",
@@ -73,8 +86,20 @@ getColumns := func(inputSpec) {
 						"pl7.app/table/orderPriority": "40"
 					}
 				}
-			}
-			],
+			},
+			{
+				"column": "regDirection",
+				"id": "regDirection",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/pathwayRegDir",
+					"valueType": "String",
+					"annotations": {
+						"pl7.app/label": "DEG subset",
+						"pl7.app/table/orderPriority": "30"
+					}
+				}
+			}],
 		"storageFormat": "Binary",
 		"partitionKeyLength": 0
 	}
