@@ -78,31 +78,6 @@ export const model = BlockModel.create()
     return createPlDataTable(ctx, pCols, ctx.uiState?.tableState);
   })
 
-  .output('test', (ctx) => {
-    if (ctx.args.geneListRef === undefined) {
-      return undefined
-    }
-    const anchorColumn = ctx.resultPool.getPColumnByRef(ctx.args?.geneListRef);
-    return anchorColumn
-
-  })
-
-  .output('test2', (ctx) => {
-    const moreColumns = ctx.resultPool
-      .getData()
-      .entries.map((o) => o.obj)
-      .filter(isPColumn)
-      .filter((col) => {
-        if (
-          col.spec.name === 'pl7.app/rna-seq/regulationDirection'
-        ) {
-          return true;
-        }
-        return false;
-      });
-      return moreColumns;
-
-  })
   .output('ORATop10Pf', (ctx): PFrameHandle | undefined => {
     const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
     if (pCols === undefined) {
@@ -120,26 +95,15 @@ export const model = BlockModel.create()
     return ctx.createPFrame([...pCols, ...upstream]);
   })
 
-  // .output('ORATop10PfSpec', (ctx) => {
-  //   const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
-  //   if (pCols === undefined) {
-  //     return undefined;
-  //   }
+  .output('ORATop10Pcols', (ctx) => {
+    const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
+    if (pCols === undefined) {
+      return undefined;
+    }
 
-  //   const anchor = pCols[0];
-  //   if (!anchor) return undefined;
+    return pCols;
 
-  //   const r = getUniquePartitionKeys(anchor.data);
-  //   if (!r) return undefined;
-
-  //   // for the table purposes, we set "pl7.app/axisNature": "heterogeneous" on gene axis
-  //   if (pCols.length !== 1) {
-  //     throw Error('unexpected number of columns');
-  //   }
-
-  //   return pCols[0];
-
-  // })
+  })
 
   .sections([
     { type: 'link', href: '/', label: 'Table' },

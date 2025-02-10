@@ -2,7 +2,8 @@
 
 # Install and load necessary libraries
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
-  install.packages("BiocManager", repos = "https://cloud.r-project.org")
+  install.packages("BiocManager", repos = "https://cloud.r-project.org",
+                  quiet=TRUE)
 }
 
 required_packages <- c(
@@ -14,7 +15,7 @@ required_packages <- c(
 
 for (pkg in required_packages) {
   if (!requireNamespace(pkg, quietly = TRUE)) {
-    BiocManager::install(pkg, ask = FALSE)
+    BiocManager::install(pkg, ask = FALSE, quiet = TRUE)
   }
   suppressPackageStartupMessages(library(pkg, character.only = TRUE))
 }
@@ -203,7 +204,7 @@ runORA <- function(trend_data, dir_label) {
 # Load input data table
 gene_data <- read.csv(opt$input)
 # Get list of interest subsets
-subsets <- sort(strsplit(opt$gene_subset, '_')[[1]])
+subsets <- strsplit(opt$gene_subset, '_')[[1]]
 
 enriched_results <- data.frame()
 top10_results <- data.frame()
@@ -219,6 +220,9 @@ for (subs in subsets) {
   # Run the analysis for specific subset
   df <- runORA(trend_data, dir_label=subs)
   df["regDirection"] <- toString(subset_naming[subs])
+  # Convert gene ratio to gene %
+  df["GenePercent"] <- unlist(lapply(strsplit(df[,"GeneRatio"], "/"), 
+                                    function(v) as.integer(v[1])/as.integer(v[2])*100))
 
   # Combine all results in the same dataframe
   enriched_results <- rbind(enriched_results, df)
@@ -236,11 +240,7 @@ top10_results_file <- file.path(input_dir,
                         paste0("top10PathwayEnrichmentResults.csv"))
 # Save all results
 write.csv(as.data.frame(enriched_results), results_file, row.names = FALSE)
-  # Save the top 10 results by p.adjust
-  # Save the top 10 results by p.adjust
-  top10_results <- head(as.data.frame(enriched_results[order(enriched_results$p.adjust), ]), 10)
 # Save the top 10 results by p.adjust
-  top10_results <- head(as.data.frame(enriched_results[order(enriched_results$p.adjust), ]), 10)
 write.csv(top10_results, top10_results_file, row.names = FALSE)
 
 message(paste("Analysis completed. Results are saved in", results_file))

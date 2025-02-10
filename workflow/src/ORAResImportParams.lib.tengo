@@ -16,9 +16,24 @@ getColumns := func(inputSpec) {
 					"annotations": {
 						"pl7.app/label": "Pathway ID",
 						"pl7.app/contrast": inputSpec.annotations["pl7.app/label"],
-						"pl7.app/table/orderPriority": "90"
+						"pl7.app/table/orderPriority": "100"
 					}
 			}
+			},
+			{
+				"column": "regDirection",
+				"spec": {
+					"name": "pl7.app/rna-seq/pathwayRegDir",
+					"type": "String",
+					"domain": {
+						"pl7.app/species": inputSpec.domain["pl7.app/species"]
+					},
+					"annotations": {
+						"pl7.app/label": "DEG subset",
+						"pl7.app/contrast": inputSpec.annotations["pl7.app/label"],
+						"pl7.app/table/orderPriority": "90"
+					}
+				}
 			}
 			],
 		"columns": [
@@ -88,18 +103,33 @@ getColumns := func(inputSpec) {
 				}
 			},
 			{
-				"column": "regDirection",
-				"id": "regDirection",
+				"column": "GenePercent",
+				"id": "GenePercent",
 				"allowNA": true,
 				"spec": {
-					"name": "pl7.app/rna-seq/pathwayRegDir",
-					"valueType": "String",
+					"name": "pl7.app/rna-seq/GenePercent",
+					"valueType": "Double",
 					"annotations": {
-						"pl7.app/label": "DEG subset",
+						"pl7.app/label": "Gene percent",
 						"pl7.app/table/orderPriority": "30"
 					}
 				}
-			}],
+			},
+			// To be included in the future for enrichment dotblots
+			// {
+			// 	"column": "Count",
+			// 	"id": "Count",
+			// 	"allowNA": true,
+			// 	"spec": {
+			// 		"name": "pl7.app/rna-seq/geneCount",
+			// 		"valueType": "Double",
+			// 		"annotations": {
+			// 			"pl7.app/label": "Gene count",
+			// 			"pl7.app/table/orderPriority": "30"
+			// 		}
+			// 	}
+			// }
+			],
 		"storageFormat": "Binary",
 		"partitionKeyLength": 0
 	}
