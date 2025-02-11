@@ -79,10 +79,15 @@ export const model = BlockModel.create()
   })
 
   .output('ORATop10Pf', (ctx): PFrameHandle | undefined => {
-    const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
+    var pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
+
+    // Filter out Gene/Background Ratio pColumns
+    pCols = pCols.filter(
+      col => !col.spec.name.includes("Ratio")
+    );
 
     // enriching with upstream data
     const valueTypes = ['Int', 'Float', 'Double', 'String'] as ValueType[];
@@ -90,7 +95,9 @@ export const model = BlockModel.create()
       .getData()
       .entries.map((v) => v.obj)
       .filter(isPColumn)
-      .filter((column) => valueTypes.find((valueType) => valueType === column.spec.valueType));
+      .filter((column) => valueTypes.find((valueType) => 
+                                          valueType === column.spec.valueType &&
+                                          column.id.includes("metadata")));
 
     return ctx.createPFrame([...pCols, ...upstream]);
   })

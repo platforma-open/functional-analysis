@@ -1,7 +1,7 @@
 ll := import("@platforma-sdk/workflow-tengo:ll")
 
-getColumns := func(inputSpec) {
-	return {
+getColumns := func(inputSpec, pathwayCollection) {
+	cols := {
 		"axes": [
 			{
 				"column": "ID",
@@ -37,19 +37,6 @@ getColumns := func(inputSpec) {
 			}
 			],
 		"columns": [
-			{
-				"column": "ONTOLOGY",
-				"id": "ontology",
-				"allowNA": true,
-				"spec": {
-					"name": "pl7.app/rna-seq/pathwayOntology",
-					"valueType": "String",
-					"annotations": {
-						"pl7.app/label": "Ontology",
-						"pl7.app/table/orderPriority": "80"
-					}
-				}
-			},
 			{
 				"column": "Description",
 				"id": "pathwayname",
@@ -115,6 +102,32 @@ getColumns := func(inputSpec) {
 					}
 				}
 			},
+			{
+				"column": "GeneRatio",
+				"id": "GeneRatio",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/GeneRatio",
+					"valueType": "String",
+					"annotations": {
+						"pl7.app/label": "Gene ratio",
+						"pl7.app/table/orderPriority": "30"
+					}
+				}
+			},
+			{
+				"column": "BgRatio",
+				"id": "BgRatio",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/BgRatio",
+					"valueType": "String",
+					"annotations": {
+						"pl7.app/label": "Background ratio",
+						"pl7.app/table/orderPriority": "30"
+					}
+				}
+			}//,
 			// To be included in the future for enrichment dotblots
 			// {
 			// 	"column": "Count",
@@ -122,7 +135,7 @@ getColumns := func(inputSpec) {
 			// 	"allowNA": true,
 			// 	"spec": {
 			// 		"name": "pl7.app/rna-seq/geneCount",
-			// 		"valueType": "Double",
+			// 		"valueType": "Integer",
 			// 		"annotations": {
 			// 			"pl7.app/label": "Gene count",
 			// 			"pl7.app/table/orderPriority": "30"
@@ -133,6 +146,26 @@ getColumns := func(inputSpec) {
 		"storageFormat": "Binary",
 		"partitionKeyLength": 0
 	}
+
+	// Ontology column only included in GO analysis
+	if pathwayCollection == "GO" {
+		cols.columns += [
+			{
+				"column": "ONTOLOGY",
+				"id": "ontology",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/pathwayOntology",
+					"valueType": "String",
+					"annotations": {
+						"pl7.app/label": "Ontology",
+						"pl7.app/table/orderPriority": "80"
+					}
+				}
+			}]
+	}
+
+	return cols
 }
 
 export ll.toStrict({

@@ -6,94 +6,56 @@ import { computed } from "vue";
 
 const app = useApp();
 
-const defaultOptions: GraphMakerProps['defaultOptions'] = [
-  {
-    inputName: 'y',
-    selectedSource: {
-      kind: 'PColumn',
-      name: "pl7.app/rna-seq/minlog10padj",
-      valueType: "Double",
-      axesSpec: [
-        {
-          name: "pl7.app/pathwayid",
-          type: "String"
-        }
-      ]
-    }
-  },
-  {
-    inputName: 'primaryGrouping',
-    selectedSource: {
-      kind: 'PColumn',
-      name: "pl7.app/rna-seq/pathwayname",
-      valueType: "String",
-      axesSpec: [
-        {
-          name: "pl7.app/pathwayid",
-          type: "String"
-        }
-      ]
-    }
-  },
-  {
-    inputName: 'tabBy',
-    selectedSource: {
-      kind: 'PColumn',
-      name: "pl7.app/rna-seq/pathwayRegDir",
-      valueType: "String",
-      axesSpec: [
-        {
-          name: "pl7.app/pathwayid",
-          type: "String"
-        }
-      ]
-    }
-  },
-  {
-    inputName: 'filters',
-    selectedSource: {
-      kind: 'PColumn',
-      name: "pl7.app/rna-seq/pathwayOntology",
-      valueType: "String",
-      axesSpec: [
-        {
-          name: "pl7.app/pathwayid",
-          type: "String"
-        }
-      ]
-    }
-  }
-];
-
-// const defaultOptions = computed((): GraphMakerProps['defaultOptions'] => {
-//     const ORATop10Pcols = app.model.outputs.ORATop10Pcols
+const defaultOptions = computed((): GraphMakerProps['defaultOptions'] => {
+    const ORATop10Pcols = app.model.outputs.ORATop10Pcols
     
-//     if (!ORATop10Pcols) {
-//         return undefined
-//     }
+    if (!ORATop10Pcols) {
+        return undefined
+    }
 
-//     const defaults: GraphMakerProps['defaultOptions'] = [
-//         {
-//             inputName: 'y',
-//             selectedSource: ORATop10Pcols[4]
-//         },
-//         {
-//             inputName: 'primaryGrouping',
-//             selectedSource: ORATop10Pcols[3]
-//         },
-//         {
-//             inputName: 'tabBy',
-//             selectedSource: ORATop10Pcols[5]
-//         },
-//         {
-//             inputName: 'filters',
-//             selectedSource: ORATop10Pcols[2]
-//         },
-        
-//     ];
+    // Declare index variables 
+    let minLog10PIndex: number;
+    let descriptionIndex: number;
+    let ontoFamilyIndex: number | null;
+    // GO pathways Pcols have different indexing
+    if ( ORATop10Pcols[3].spec.name === "pl7.app/rna-seq/pathwayOntology") {
+        minLog10PIndex = 7;
+        descriptionIndex = 6;
+        ontoFamilyIndex = 3;
 
-//     return defaults;
-// })
+    // Reactome Pcols have different indexing
+    } else {
+        minLog10PIndex = 6;
+        descriptionIndex = 5;
+        ontoFamilyIndex = null;
+    }
+
+    const defaults: GraphMakerProps['defaultOptions'] = [
+        {
+            inputName: 'y',
+            selectedSource: ORATop10Pcols[minLog10PIndex].spec
+        },
+        {
+            inputName: 'primaryGrouping',
+            selectedSource: ORATop10Pcols[descriptionIndex].spec
+        },
+        {
+            inputName: 'tabBy',
+            selectedSource: ORATop10Pcols[0].spec.axesSpec[1]
+        }
+    ];
+
+    if ( ontoFamilyIndex !== null) {
+        defaults.push(
+            {
+            inputName: 'filters',
+            selectedSource: ORATop10Pcols[ontoFamilyIndex].spec
+            }
+        )
+    }
+
+    return defaults;
+})
 </script>
 
 <template>
