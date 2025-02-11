@@ -19,12 +19,14 @@ export type UiState = {
 export type BlockArgs = {
   geneListRef?: PlRef;
   pathwayCollection?: string;
+  geneSubset: string[];
 };
 
 export const model = BlockModel.create()
 
   .withArgs<BlockArgs>({
-    pathwayCollection: "GO"
+    pathwayCollection: "GO",
+    geneSubset: ['Up', 'Down'],
   })
 
   .withUiState<UiState>({
@@ -46,8 +48,18 @@ export const model = BlockModel.create()
     }
   })
 
+  // Activate "Run" button only after input DEG list is selected
+  .argsValid((ctx) =>  (ctx.args.geneListRef !== undefined) &&
+                      (ctx.args.geneSubset.length !== 0))
+
+  // User can only select as input regulationDirection lists
+  // includeNativeLabel ensures regulationDirection pl7.app/label
+  // is also visible in selection (by default we only see Samples & data ID)
+  // addLabelAsSuffix moves the native label to the end
+  // Result: [dataID] / A vs B
   .output('geneListOptions', (ctx) =>
-    ctx.resultPool.getOptions((spec) => isPColumnSpec(spec) && spec.name === 'pl7.app/rna-seq/DEG')
+    ctx.resultPool.getOptions((spec) => isPColumnSpec(spec) && spec.name === 'pl7.app/rna-seq/regulationDirection',
+                              {includeNativeLabel: true, addLabelAsSuffix:true})
   )
 
   .output('datasetSpec', (ctx) => {
@@ -65,10 +77,15 @@ export const model = BlockModel.create()
   })
 
   .output('ORATop10Pf', (ctx): PFrameHandle | undefined => {
-    const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
+    var pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
+
+    // Filter out Gene/Background Ratio pColumns
+    pCols = pCols.filter(
+      col => !col.spec.name.includes("Ratio")
+    );
 
     // enriching with upstream data
     const valueTypes = ['Int', 'Float', 'Double', 'String'] as ValueType[];
@@ -76,9 +93,21 @@ export const model = BlockModel.create()
       .getData()
       .entries.map((v) => v.obj)
       .filter(isPColumn)
-      .filter((column) => valueTypes.find((valueType) => valueType === column.spec.valueType));
+      .filter((column) => valueTypes.find((valueType) => 
+                                          valueType === column.spec.valueType &&
+                                          column.id.includes("metadata")));
 
     return ctx.createPFrame([...pCols, ...upstream]);
+  })
+
+  .output('ORATop10Pcols', (ctx) => {
+    const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
+    if (pCols === undefined) {
+      return undefined;
+    }
+
+    return pCols;
+
   })
 
   .sections([

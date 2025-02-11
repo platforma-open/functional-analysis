@@ -1,7 +1,7 @@
 ll := import("@platforma-sdk/workflow-tengo:ll")
 
-getColumns := func(inputSpec) {
-	return {
+getColumns := func(inputSpec, pathwayCollection) {
+	cols := {
 		"axes": [
 			{
 				"column": "ID",
@@ -16,9 +16,24 @@ getColumns := func(inputSpec) {
 					"annotations": {
 						"pl7.app/label": "Pathway ID",
 						"pl7.app/contrast": inputSpec.annotations["pl7.app/label"],
-						"pl7.app/table/orderPriority": "80"
+						"pl7.app/table/orderPriority": "100"
 					}
 			}
+			},
+			{
+				"column": "regDirection",
+				"spec": {
+					"name": "pl7.app/rna-seq/pathwayRegDir",
+					"type": "String",
+					"domain": {
+						"pl7.app/species": inputSpec.domain["pl7.app/species"]
+					},
+					"annotations": {
+						"pl7.app/label": "DEG subset",
+						"pl7.app/contrast": inputSpec.annotations["pl7.app/label"],
+						"pl7.app/table/orderPriority": "90"
+					}
+				}
 			}
 			],
 		"columns": [
@@ -73,11 +88,84 @@ getColumns := func(inputSpec) {
 						"pl7.app/table/orderPriority": "40"
 					}
 				}
-			}
+			},
+			{
+				"column": "GenePercent",
+				"id": "GenePercent",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/GenePercent",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "Gene percent",
+						"pl7.app/table/orderPriority": "30"
+					}
+				}
+			},
+			{
+				"column": "GeneRatio",
+				"id": "GeneRatio",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/GeneRatio",
+					"valueType": "String",
+					"annotations": {
+						"pl7.app/label": "Gene ratio",
+						"pl7.app/table/orderPriority": "30"
+					}
+				}
+			},
+			{
+				"column": "BgRatio",
+				"id": "BgRatio",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/BgRatio",
+					"valueType": "String",
+					"annotations": {
+						"pl7.app/label": "Background ratio",
+						"pl7.app/table/orderPriority": "30"
+					}
+				}
+			}//,
+			// To be included in the future for enrichment dotblots
+			// {
+			// 	"column": "Count",
+			// 	"id": "Count",
+			// 	"allowNA": true,
+			// 	"spec": {
+			// 		"name": "pl7.app/rna-seq/geneCount",
+			// 		"valueType": "Integer",
+			// 		"annotations": {
+			// 			"pl7.app/label": "Gene count",
+			// 			"pl7.app/table/orderPriority": "30"
+			// 		}
+			// 	}
+			// }
 			],
 		"storageFormat": "Binary",
 		"partitionKeyLength": 0
 	}
+
+	// Ontology column only included in GO analysis
+	if pathwayCollection == "GO" {
+		cols.columns += [
+			{
+				"column": "ONTOLOGY",
+				"id": "ontology",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/pathwayOntology",
+					"valueType": "String",
+					"annotations": {
+						"pl7.app/label": "Ontology",
+						"pl7.app/table/orderPriority": "80"
+					}
+				}
+			}]
+	}
+
+	return cols
 }
 
 export ll.toStrict({
