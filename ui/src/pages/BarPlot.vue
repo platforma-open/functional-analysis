@@ -13,43 +13,39 @@ const defaultOptions = computed((): GraphMakerProps['defaultOptions'] => {
         return undefined
     }
 
-    // Declare index variables 
-    let minLog10PIndex: number;
-    let descriptionIndex: number;
-    let ontoFamilyIndex: number | null;
-    // GO pathways Pcols have different indexing
-    if ( ORATop10Pcols[3].spec.name === "pl7.app/rna-seq/pathwayOntology") {
-        minLog10PIndex = 7;
-        descriptionIndex = 6;
-        ontoFamilyIndex = 3;
-
-    // Reactome Pcols have different indexing
-    } else {
-        minLog10PIndex = 6;
-        descriptionIndex = 5;
-        ontoFamilyIndex = null;
+    // Declare index variable names and dictionary
+    const focusNames: string[] = [
+        'pl7.app/rna-seq/minlog10padj',
+        'pl7.app/rna-seq/pathwayname',
+        'pl7.app/rna-seq/pathwayOntology',
+    ];
+    const indexDict: { [key: string]: number } = {};
+    // Iterate over spec names and get proper indexes
+    for (const fo of focusNames) {
+        indexDict[fo] = ORATop10Pcols.findIndex((p) => p.spec.name === fo);
     }
 
     const defaults: GraphMakerProps['defaultOptions'] = [
         {
             inputName: 'y',
-            selectedSource: ORATop10Pcols[minLog10PIndex].spec
+            selectedSource: ORATop10Pcols[indexDict['pl7.app/rna-seq/minlog10padj']].spec
         },
         {
             inputName: 'primaryGrouping',
-            selectedSource: ORATop10Pcols[descriptionIndex].spec
+            selectedSource: ORATop10Pcols[indexDict['pl7.app/rna-seq/pathwayname']].spec
         },
         {
             inputName: 'tabBy',
-            selectedSource: ORATop10Pcols[0].spec.axesSpec[1]
+            selectedSource: ORATop10Pcols[indexDict['pl7.app/rna-seq/pathwayname']].spec.axesSpec[1]
         }
     ];
 
-    if ( ontoFamilyIndex !== null) {
+    // Not found indexes are set to -1
+    if ( indexDict['pl7.app/rna-seq/pathwayOntology'] !== -1) {
         defaults.push(
             {
             inputName: 'filters',
-            selectedSource: ORATop10Pcols[ontoFamilyIndex].spec
+            selectedSource: ORATop10Pcols[indexDict['pl7.app/rna-seq/pathwayOntology']].spec
             }
         )
     }
@@ -59,6 +55,7 @@ const defaultOptions = computed((): GraphMakerProps['defaultOptions'] => {
 </script>
 
 <template>
-  <GraphMaker chartType="discrete" template="bar" :p-frame="app.model.outputs.ORATop10Pf" v-model="app.model.ui.graphState" 
+  <GraphMaker chartType="discrete" template="bar" :p-frame="app.model.outputs.ORATop10Pf" 
+  v-model="app.model.ui.graphState" 
   :defaultOptions="defaultOptions" />
 </template>
