@@ -3,6 +3,7 @@ import { GraphMaker, GraphMakerProps } from "@milaboratories/graph-maker";
 import '@milaboratories/graph-maker/styles';
 import { useApp } from "../app";
 import { computed } from "vue";
+import { PColumnIdAndSpec } from '@platforma-sdk/model';
 
 const app = useApp();
 
@@ -13,39 +14,39 @@ const defaultOptions = computed((): GraphMakerProps['defaultOptions'] => {
         return undefined
     }
 
-    // Declare index variable names and dictionary
-    const focusNames: string[] = [
-        'pl7.app/rna-seq/minlog10padj',
-        'pl7.app/rna-seq/pathwayname',
-        'pl7.app/rna-seq/pathwayOntology',
-    ];
-    const indexDict: { [key: string]: number } = {};
-    // Iterate over spec names and get proper indexes
-    for (const fo of focusNames) {
-        indexDict[fo] = ORATop10Pcols.findIndex((p) => p.spec.name === fo);
+    function getIndex(name: string, pcols: PColumnIdAndSpec[]): number {
+        return pcols.findIndex((p) => p.spec.name === name);
     }
-
+    
     const defaults: GraphMakerProps['defaultOptions'] = [
         {
             inputName: 'y',
-            selectedSource: ORATop10Pcols[indexDict['pl7.app/rna-seq/minlog10padj']].spec
+            selectedSource: ORATop10Pcols[getIndex('pl7.app/rna-seq/minlog10padj',
+                                                    ORATop10Pcols
+                                                    )].spec
         },
         {
             inputName: 'primaryGrouping',
-            selectedSource: ORATop10Pcols[indexDict['pl7.app/rna-seq/pathwayname']].spec
+            selectedSource: ORATop10Pcols[getIndex('pl7.app/rna-seq/pathwayname',
+                                                    ORATop10Pcols
+                                                    )].spec
         },
         {
             inputName: 'tabBy',
-            selectedSource: ORATop10Pcols[indexDict['pl7.app/rna-seq/pathwayname']].spec.axesSpec[1]
+            selectedSource: ORATop10Pcols[getIndex('pl7.app/rna-seq/pathwayname',
+                                                    ORATop10Pcols
+                                                    )].spec.axesSpec[1]
         }
     ];
 
     // Not found indexes are set to -1
-    if ( indexDict['pl7.app/rna-seq/pathwayOntology'] !== -1) {
+    if ( getIndex('pl7.app/rna-seq/pathwayOntology', ORATop10Pcols) !== -1) {
         defaults.push(
             {
             inputName: 'filters',
-            selectedSource: ORATop10Pcols[indexDict['pl7.app/rna-seq/pathwayOntology']].spec
+            selectedSource: ORATop10Pcols[getIndex('pl7.app/rna-seq/pathwayOntology',
+                                                    ORATop10Pcols
+                                                    )].spec
             }
         )
     }

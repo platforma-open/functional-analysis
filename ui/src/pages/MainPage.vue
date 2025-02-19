@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PlAgDataTable, PlBlockPage, PlBtnGhost, PlCheckboxGroup, 
-  PlDataTableSettings, PlDropdown, PlDropdownRef, PlCheckbox,
-  PlMaskIcon24, PlSlideModal, PlTooltip} from '@platforma-sdk/ui-vue';
+  PlDataTableSettings, PlDropdown, PlDropdownRef, 
+  PlMaskIcon24, PlSlideModal} from '@platforma-sdk/ui-vue';
 import { useApp } from '../app';
 import { computed, reactive, ref } from 'vue';
 

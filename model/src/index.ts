@@ -3,8 +3,8 @@ import {
   BlockModel, 
   createPlDataTable, 
   InferOutputsType, 
-  isPColumn, 
   isPColumnSpec, 
+  PColumnIdAndSpec, 
   PFrameHandle, 
   PlDataTableState, 
   PlRef, 
@@ -77,36 +77,34 @@ export const model = BlockModel.create()
   })
 
   .output('ORATop10Pf', (ctx): PFrameHandle | undefined => {
-    var pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
+    let pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
 
     // Filter out Gene/Background Ratio pColumns
     pCols = pCols.filter(
-      col => !col.spec.name.includes("Ratio")
+      col => (col.spec.name !== "pl7.app/rna-seq/BgRatio") &&
+      (col.spec.name !== "pl7.app/rna-seq/GeneRatio")
     );
 
-    // enriching with upstream data
-    const valueTypes = ['Int', 'Float', 'Double', 'String'] as ValueType[];
-    const upstream = ctx.resultPool
-      .getData()
-      .entries.map((v) => v.obj)
-      .filter(isPColumn)
-      .filter((column) => valueTypes.find((valueType) => 
-                                          valueType === column.spec.valueType &&
-                                          column.id.includes("metadata")));
-
-    return ctx.createPFrame([...pCols, ...upstream]);
+    return ctx.createPFrame([...pCols]);
   })
 
+  // Return PColumnIdAndSpec needed for default plot parameters
   .output('ORATop10Pcols', (ctx) => {
     const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
 
-    return pCols;
+    return pCols.map(
+      (c) =>
+        ({
+          columnId: c.id,
+          spec: c.spec,
+        } satisfies PColumnIdAndSpec),
+    );
 
   })
 
