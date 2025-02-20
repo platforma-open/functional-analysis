@@ -3,8 +3,8 @@ import {
   BlockModel, 
   createPlDataTable, 
   InferOutputsType, 
-  isPColumn, 
   isPColumnSpec, 
+  PColumnIdAndSpec, 
   PFrameHandle, 
   PlDataTableState, 
   PlRef, 
@@ -19,12 +19,14 @@ export type UiState = {
 export type BlockArgs = {
   geneListRef?: PlRef;
   pathwayCollection?: string;
+  geneSubset: string[];
 };
 
 export const model = BlockModel.create()
 
   .withArgs<BlockArgs>({
-    pathwayCollection: "GO"
+    pathwayCollection: "GO",
+    geneSubset: ['Up', 'Down'],
   })
 
   .withUiState<UiState>({
@@ -46,8 +48,18 @@ export const model = BlockModel.create()
     }
   })
 
+  // Activate "Run" button only after input DEG list is selected
+  .argsValid((ctx) =>  (ctx.args.geneListRef !== undefined) &&
+                      (ctx.args.geneSubset.length !== 0))
+
+  // User can only select as input regulationDirection lists
+  // includeNativeLabel ensures regulationDirection pl7.app/label
+  // is also visible in selection (by default we only see Samples & data ID)
+  // addLabelAsSuffix moves the native label to the end
+  // Result: [dataID] / A vs B
   .output('geneListOptions', (ctx) =>
-    ctx.resultPool.getOptions((spec) => isPColumnSpec(spec) && spec.name === 'pl7.app/rna-seq/DEG')
+    ctx.resultPool.getOptions((spec) => isPColumnSpec(spec) && spec.name === 'pl7.app/rna-seq/regulationDirection',
+                              {includeNativeLabel: true, addLabelAsSuffix:true})
   )
 
   .output('datasetSpec', (ctx) => {
@@ -65,20 +77,35 @@ export const model = BlockModel.create()
   })
 
   .output('ORATop10Pf', (ctx): PFrameHandle | undefined => {
+    let pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
+    if (pCols === undefined) {
+      return undefined;
+    }
+
+    // Filter out Gene/Background Ratio pColumns
+    pCols = pCols.filter(
+      col => (col.spec.name !== "pl7.app/rna-seq/BgRatio") &&
+      (col.spec.name !== "pl7.app/rna-seq/GeneRatio")
+    );
+
+    return ctx.createPFrame([...pCols]);
+  })
+
+  // Return PColumnIdAndSpec needed for default plot parameters
+  .output('ORATop10Pcols', (ctx) => {
     const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
 
-    // enriching with upstream data
-    const valueTypes = ['Int', 'Float', 'Double', 'String'] as ValueType[];
-    const upstream = ctx.resultPool
-      .getData()
-      .entries.map((v) => v.obj)
-      .filter(isPColumn)
-      .filter((column) => valueTypes.find((valueType) => valueType === column.spec.valueType));
+    return pCols.map(
+      (c) =>
+        ({
+          columnId: c.id,
+          spec: c.spec,
+        } satisfies PColumnIdAndSpec),
+    );
 
-    return ctx.createPFrame([...pCols, ...upstream]);
   })
 
   .sections([
