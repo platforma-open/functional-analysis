@@ -38,7 +38,7 @@ export const model = BlockModel.create()
       }
     },
     graphState: {
-      title: 'Enriched pathways',
+      title: 'Top 10 enriched pathways',
       template: 'bar',
       axesSettings: {
         other: {
