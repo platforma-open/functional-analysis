@@ -1,5 +1,16 @@
 # @platforma-open/milaboratories.functional-analysis.ui
 
+## 2.0.0
+
+### Major Changes
+
+- 3b2e9af: Get gene FC trend Pcolumn and run enrichment separately
+
+### Patch Changes
+
+- Updated dependencies [3b2e9af]
+  - @platforma-open/milaboratories.functional-analysis.model@2.0.0
+
 ## 1.1.1
 
 ### Patch Changes
