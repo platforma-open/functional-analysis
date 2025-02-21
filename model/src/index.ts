@@ -1,14 +1,14 @@
-import { GraphMakerState } from '@milaboratories/graph-maker';
-import { 
-  BlockModel, 
-  createPlDataTable, 
-  InferOutputsType, 
-  isPColumnSpec, 
-  PColumnIdAndSpec, 
-  PFrameHandle, 
-  PlDataTableState, 
-  PlRef, 
-  ValueType
+import type { GraphMakerState } from '@milaboratories/graph-maker';
+import type {
+  InferOutputsType,
+  PColumnIdAndSpec,
+  PFrameHandle,
+  PlDataTableState,
+  PlRef } from '@platforma-sdk/model';
+import {
+  BlockModel,
+  createPlDataTable,
+  isPColumnSpec,
 } from '@platforma-sdk/model';
 
 export type UiState = {
@@ -25,7 +25,7 @@ export type BlockArgs = {
 export const model = BlockModel.create()
 
   .withArgs<BlockArgs>({
-    pathwayCollection: "GO",
+    pathwayCollection: 'GO',
     geneSubset: ['Up', 'Down'],
   })
 
@@ -34,23 +34,23 @@ export const model = BlockModel.create()
       gridState: {},
       pTableParams: {
         sorting: [],
-        filters: []
-      }
+        filters: [],
+      },
     },
     graphState: {
       title: 'Top 10 enriched pathways',
       template: 'bar',
       axesSettings: {
         other: {
-          reverse: true
-        }
-      } as Partial<GraphMakerState['axesSettings']>
-    }
+          reverse: true,
+        },
+      } as Partial<GraphMakerState['axesSettings']>,
+    },
   })
 
   // Activate "Run" button only after input DEG list is selected
-  .argsValid((ctx) =>  (ctx.args.geneListRef !== undefined) &&
-                      (ctx.args.geneSubset.length !== 0))
+  .argsValid((ctx) => (ctx.args.geneListRef !== undefined)
+    && (ctx.args.geneSubset.length !== 0))
 
   // User can only select as input regulationDirection lists
   // includeNativeLabel ensures regulationDirection pl7.app/label
@@ -59,7 +59,7 @@ export const model = BlockModel.create()
   // Result: [dataID] / A vs B
   .output('geneListOptions', (ctx) =>
     ctx.resultPool.getOptions((spec) => isPColumnSpec(spec) && spec.name === 'pl7.app/rna-seq/regulationDirection',
-                              {includeNativeLabel: true, addLabelAsSuffix:true})
+      { includeNativeLabel: true, addLabelAsSuffix: true }),
   )
 
   .output('datasetSpec', (ctx) => {
@@ -84,8 +84,8 @@ export const model = BlockModel.create()
 
     // Filter out Gene/Background Ratio pColumns
     pCols = pCols.filter(
-      col => (col.spec.name !== "pl7.app/rna-seq/BgRatio") &&
-      (col.spec.name !== "pl7.app/rna-seq/GeneRatio")
+      (col) => (col.spec.name !== 'pl7.app/rna-seq/BgRatio')
+        && (col.spec.name !== 'pl7.app/rna-seq/GeneRatio'),
     );
 
     return ctx.createPFrame([...pCols]);
@@ -105,12 +105,11 @@ export const model = BlockModel.create()
           spec: c.spec,
         } satisfies PColumnIdAndSpec),
     );
-
   })
 
   .sections([
     { type: 'link', href: '/', label: 'Table' },
-    { type: 'link', href: '/graph', label: 'Bar plot' }
+    { type: 'link', href: '/graph', label: 'Bar plot' },
   ])
 
   .done();
