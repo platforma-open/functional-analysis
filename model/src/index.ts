@@ -14,10 +14,11 @@ import {
 export type UiState = {
   tableState: PlDataTableState;
   graphState: GraphMakerState;
+  contrast?: string;
 };
 
 export type BlockArgs = {
-  geneListRef?: PlRef;
+  geneListRef?: PlRef[];
   pathwayCollection?: string;
   geneSubset: string[];
 };
@@ -48,8 +49,9 @@ export const model = BlockModel.create()
     },
   })
 
-  // Activate "Run" button only after input DEG list is selected
+  // Activate "Run" button only after these conditions are satisfied
   .argsValid((ctx) => (ctx.args.geneListRef !== undefined)
+    && (ctx.args.geneListRef.length !== 0)
     && (ctx.args.geneSubset.length !== 0))
 
   // User can only select as input regulationDirection lists
@@ -58,20 +60,41 @@ export const model = BlockModel.create()
   // addLabelAsSuffix moves the native label to the end
   // Result: [dataID] / A vs B
   .output('geneListOptions', (ctx) =>
-    ctx.resultPool.getOptions((spec) => isPColumnSpec(spec) && spec.name === 'pl7.app/rna-seq/regulationDirection',
-      { includeNativeLabel: true, addLabelAsSuffix: true }),
+    ctx.resultPool.getOptions((spec) => isPColumnSpec(spec)
+      && spec.name === 'pl7.app/rna-seq/regulationDirection',
+    { includeNativeLabel: true, addLabelAsSuffix: true }),
   )
 
-  .output('datasetSpec', (ctx) => {
-    if (ctx.args.geneListRef) return ctx.resultPool.getSpecByRef(ctx.args.geneListRef);
-    else return undefined;
+  .output('contrastList', (ctx): string[] | undefined => {
+    // Make sure input contrast results have been selected
+    if (!ctx.args.geneListRef) return undefined;
+
+    // Get the specs of the selected p-columns and extract contrast info
+    const contrasts: string[] = [];
+    for (const gRef of ctx.args.geneListRef) {
+      const anchorSpec = ctx.resultPool.getSpecByRef(gRef);
+      if (anchorSpec?.annotations !== undefined) {
+        contrasts.push(anchorSpec.annotations['pl7.app/label']);
+      }
+    }
+    return contrasts;
   })
 
+// .output('datasetSpec', (ctx) => {
+//   if (ctx.args.geneListRef) return ctx.resultPool.getSpecByRef(ctx.args.geneListRef);
+//   else return undefined;
+// })
+
   .output('ORApt', (ctx) => {
-    const pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
+    let pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
+
+    // Filter by selected contrast
+    pCols = pCols.filter(
+      (col) => (col.spec.axesSpec[0]?.domain?.['pl7.app/comparison'] === ctx.uiState.contrast),
+    );
 
     return createPlDataTable(ctx, pCols, ctx.uiState?.tableState);
   })
@@ -82,10 +105,13 @@ export const model = BlockModel.create()
       return undefined;
     }
 
-    // Filter out Gene/Background Ratio pColumns
     pCols = pCols.filter(
-      (col) => (col.spec.name !== 'pl7.app/rna-seq/BgRatio')
-        && (col.spec.name !== 'pl7.app/rna-seq/GeneRatio'),
+      (col) => (
+        // Filter out Gene/Background Ratio pColumns
+        col.spec.name !== 'pl7.app/rna-seq/BgRatio')
+      && (col.spec.name !== 'pl7.app/rna-seq/GeneRatio')
+      // Filter by selected contrast
+      && (col.spec.axesSpec[0]?.domain?.['pl7.app/comparison'] === ctx.uiState.contrast),
     );
 
     return ctx.createPFrame([...pCols]);
@@ -93,10 +119,15 @@ export const model = BlockModel.create()
 
   // Return PColumnIdAndSpec needed for default plot parameters
   .output('ORATop10Pcols', (ctx) => {
-    const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
+    let pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
+
+    // Filter by selected contrast
+    pCols = pCols.filter(
+      (col) => (col.spec.axesSpec[0]?.domain?.['pl7.app/comparison'] === ctx.uiState.contrast),
+    );
 
     return pCols.map(
       (c) =>
