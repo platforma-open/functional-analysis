@@ -7,14 +7,12 @@ pframes := import("@platforma-sdk/workflow-tengo:pframes")
 pSpec := import("@platforma-sdk/workflow-tengo:pframes.spec")
 text := import("text")
 
-allIndexes := []
 wf.prepare(func(args){
 	// This function can only accept one reference per key
 	inputRegDir := {}
 	regIndex := 1
 	for gList in args.geneListRef {
 		inputRegDir["inputRegDir" + string(regIndex)] = wf.resolve(gList, { errIfMissing: true })
-		allIndexes = append(allIndexes, regIndex)
 		regIndex = regIndex + 1
 	}
 	// return {inputRegDir1: wf.resolve(args.geneListRef[0], { errIfMissing: true })}
@@ -31,12 +29,8 @@ wf.body(func(args) {
 	// Iterate over list of inputs
 	// for idx in allIndexes {
 	for _, input in args.inputRegDir {
-	// for input in args.inputRegDir {
-		// input := args["inputRegDir" + string(idx)]
-		// input := args["inputRegDir1"]
-		// input := args.inputRegDir1
 		inputSpec := input.spec
-
+		
 		contrast := inputSpec.annotations["pl7.app/label"]
 		species := inputSpec.domain["pl7.app/species"]
 		pathwayCollection := args.pathwayCollection
@@ -44,7 +38,7 @@ wf.body(func(args) {
 		csvGeneList := xsv.exportFrame([input], "csv", {})
 		// Join subset options into string to input it as an argument for R
 		geneSubset := text.join(args.geneSubset, "_");
-
+		
 		ORA := exec.builder().
 			software(assets.importSoftware("@platforma-open/milaboratories.functional-analysis.software:over-representation-analysis")).
 			arg("--input").arg("geneList.csv").
@@ -62,7 +56,6 @@ wf.body(func(args) {
 		ORAResImportParams := ORAResPfconvParamsLib.getColumns(inputSpec, pathwayCollection)
 		ORAPf := xsv.importFile(ORA.getFile("pathwayEnrichmentResults.csv"), "csv", ORAResImportParams)
 		ORATop10Pf := xsv.importFile(ORA.getFile("top10PathwayEnrichmentResults.csv"), "csv", ORAResImportParams)
-
 
 		// Keep Pcolumns for export
 		for columnName, value in ORAPf { 
