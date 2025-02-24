@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.software
 
+## 2.1.0
+
+### Minor Changes
+
+- 740e35d: top N per GO ontology and safe for empty inputs
+
 ## 2.0.0
 
 ### Major Changes
