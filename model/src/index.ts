@@ -93,7 +93,7 @@ export const model = BlockModel.create()
 
     // Filter by selected contrast
     pCols = pCols.filter(
-      (col) => (col.spec.axesSpec[0]?.domain?.['pl7.app/comparison'] === ctx.uiState.contrast),
+      (col) => (col.spec.annotations?.['pl7.app/contrast'] === ctx.uiState.contrast),
     );
 
     return createPlDataTable(ctx, pCols, ctx.uiState?.tableState);
@@ -111,7 +111,7 @@ export const model = BlockModel.create()
         col.spec.name !== 'pl7.app/rna-seq/BgRatio')
       && (col.spec.name !== 'pl7.app/rna-seq/GeneRatio')
       // Filter by selected contrast
-      && (col.spec.axesSpec[0]?.domain?.['pl7.app/comparison'] === ctx.uiState.contrast),
+      && (col.spec.annotations?.['pl7.app/contrast'] === ctx.uiState.contrast),
     );
 
     return ctx.createPFrame([...pCols]);
@@ -126,7 +126,7 @@ export const model = BlockModel.create()
 
     // Filter by selected contrast
     pCols = pCols.filter(
-      (col) => (col.spec.axesSpec[0]?.domain?.['pl7.app/comparison'] === ctx.uiState.contrast),
+      (col) => (col.spec.annotations?.['pl7.app/contrast'] === ctx.uiState.contrast),
     );
 
     return pCols.map(

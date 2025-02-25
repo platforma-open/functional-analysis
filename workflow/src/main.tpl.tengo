@@ -15,7 +15,6 @@ wf.prepare(func(args){
 		inputRegDir["inputRegDir" + string(regIndex)] = wf.resolve(gList, { errIfMissing: true })
 		regIndex = regIndex + 1
 	}
-	// return {inputRegDir1: wf.resolve(args.geneListRef[0], { errIfMissing: true })}
 	return {inputRegDir: inputRegDir}
 })
 
@@ -54,34 +53,43 @@ wf.body(func(args) {
 			run()
 
 		ORAResImportParams := ORAResPfconvParamsLib.getColumns(inputSpec, pathwayCollection)
-		ORAPf := xsv.importFile(ORA.getFile("pathwayEnrichmentResults.csv"), "csv", ORAResImportParams)
-		ORATop10Pf := xsv.importFile(ORA.getFile("top10PathwayEnrichmentResults.csv"), "csv", ORAResImportParams)
+		ORAPf := xsv.importFile(ORA.getFile("pathwayEnrichmentResults.csv"), "csv", ORAResImportParams, 
+															// This changes output format from default to per column
+															// So key will be column name and values spec and data
+															{splitDataAndSpec: true})
+		ORATop10Pf := xsv.importFile(ORA.getFile("top10PathwayEnrichmentResults.csv"), "csv", ORAResImportParams, 
+															{splitDataAndSpec: true})
+		// Runtime Error: assertion error: condition failed: field %!(EXTRA
+		// string="GO - Treated vs Control (UP\\Down-regulated gene list).spec", string=" is already set")
 
 		// Keep Pcolumns for export
 		for columnName, value in ORAPf { 
 			columnSpec := value.spec
-			// Include contrast in axes domain
-			for ax in columnSpec.axesSpec {
-				ax.domain["pl7.app/contrast"] = contrast
-			}
+			// Include contrast in axes domain?
+			// for ax in columnSpec.axesSpec {
+			// 	ax.domain["pl7.app/contrast"] = contrast
+			// }
+			// Include contrast in annotation
+			columnSpec.annotations["pl7.app/contrast"] = contrast
 			columnData := value.data
 			oraPFrameBuilder.add(
-				pathwayCollection + " - " + contrast,
+				contrast + " - " + columnName,
 				columnSpec,
 				columnData
-
 			)
 		}
 
 		for columnName, value in ORATop10Pf { 
 			columnSpec := value.spec
-			// Include contrast in axes domain
-			for ax in columnSpec.axesSpec {
-				ax.domain["pl7.app/contrast"] = contrast
-			}
+			// Include contrast in axes domain?
+			// for ax in columnSpec.axesSpec {
+			// 	ax.domain["pl7.app/contrast"] = contrast
+			// }
+			// Include contrast in annotation
+			columnSpec.annotations["pl7.app/contrast"] = contrast
 			columnData := value.data
 			oraTop10PFrameBuilder.add(
-				pathwayCollection + " - " + contrast,
+				contrast + " - " + columnName,
 				columnSpec,
 				columnData
 
@@ -96,8 +104,8 @@ wf.body(func(args) {
 	oraTop10Pf := oraTop10PFrameBuilder.build()
 
 	outputs := {
-		ORAPf: oraPf,
-		ORATop10Pf: oraTop10Pf
+		ORAPf: pframes.exportFrame(oraPf),
+		ORATop10Pf: pframes.exportFrame(oraTop10Pf)
 	}
 	
 	return {
