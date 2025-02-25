@@ -1,5 +1,31 @@
 ## 1.0.0
 
+## 1.1.1
+
+### Patch Changes
+
+- @platforma-open/milaboratories.functional-analysis.workflow@2.0.2
+
+## 1.1.0
+
+### Minor Changes
+
+- 8b2a81b: Updated metadata
+
+## 1.0.14
+
+### Patch Changes
+
+- @platforma-open/milaboratories.functional-analysis.workflow@2.0.1
+
+## 1.0.13
+
+### Patch Changes
+
+- Updated dependencies [818d935]
+  - @platforma-open/milaboratories.functional-analysis.model@2.1.0
+  - @platforma-open/milaboratories.functional-analysis.ui@2.0.1
+
 ## 1.0.12
 
 ### Patch Changes
