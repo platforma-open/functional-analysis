@@ -1,5 +1,15 @@
 # @platforma-open/milaboratories.functional-analysis.software
 
+## 2.2.0
+
+### Minor Changes
+
+- 065e05a: Updated Renv
+
+### Patch Changes
+
+- d3c2c3f: Use fresher version of runenv with more dependencies installed
+
 ## 2.1.0
 
 ### Minor Changes

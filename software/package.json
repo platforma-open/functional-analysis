@@ -1,6 +1,6 @@
 {
   "name": "@platforma-open/milaboratories.functional-analysis.software",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "module",
   "description": "Block Software: Run Pathway Enrichment with R",
   "scripts": {
