@@ -1,5 +1,11 @@
 ## 1.0.0
 
+## 1.1.0
+
+### Minor Changes
+
+- 8b2a81b: Updated metadata
+
 ## 1.0.14
 
 ### Patch Changes
