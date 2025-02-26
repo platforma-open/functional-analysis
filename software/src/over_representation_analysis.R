@@ -130,66 +130,101 @@ getOrgDb <- function(species, collection) {
 runORA <- function(trend_data, dir_label) {
   print(paste("Running enrichment analysis for genes with following trend: ",
               dir_label))
+  # Proceed only if we have genes with selected trend
+  if (nrow(trend_data) != 0) {
+    # Map Ensembl IDs to Entrez IDs
+    trend_data$EntrezId <- convertEnsemblToEntrez(as.character(trend_data$Ensembl.Id),
+                                                  opt$species)
+    trend_data <- trend_data[!is.na(trend_data$EntrezId), ]
+    gene_ids <- as.character(trend_data$EntrezId)
 
-  # Map Ensembl IDs to Entrez IDs
-  trend_data$EntrezId <- convertEnsemblToEntrez(as.character(trend_data$Ensembl.Id),
-                                                opt$species)
-  trend_data <- trend_data[!is.na(trend_data$EntrezId), ]
-  gene_ids <- as.character(trend_data$EntrezId)
+    # Set species mapping for pathway collection
+    species_for_collection <- mapSpecies(opt$species, opt$pathway_collection)
+    background_genes <- keys(getOrgDb(opt$species, "GO"), keytype = "ENTREZID")
 
-  # Set species mapping for pathway collection
-  species_for_collection <- mapSpecies(opt$species, opt$pathway_collection)
-  background_genes <- keys(getOrgDb(opt$species, "GO"), keytype = "ENTREZID")
+    # Debugging info
+    print(paste("Number of", dir_label, "input genes:", length(gene_ids)))
+    print(paste("Number of", dir_label, "background genes:",
+                length(background_genes)))
 
-  # Debugging info
-  print(paste("Number of", dir_label, "input genes:", length(gene_ids)))
-  print(paste("Number of", dir_label, "background genes:",
-              length(background_genes)))
+    # Perform enrichment analysis based on pathway collection
+    ora_results <- switch(
+      tolower(opt$pathway_collection),
+      "go" = enrichGO(
+        gene = gene_ids,
+        OrgDb = getOrgDb(opt$species, "GO"),
+        keyType = "ENTREZID",
+        universe = background_genes,
+        ont = "ALL",
+        pvalueCutoff = 0.05,
+        qvalueCutoff = 0.2
+      ),
+      "kegg" = enrichKEGG(
+        gene = gene_ids,
+        organism = species_for_collection,
+        keyType = "kegg",
+        universe = background_genes,  # Add universe
+        pvalueCutoff = 0.05,
+        use_internal_data = TRUE
+      ),
+      "reactome" = enrichPathway(
+        gene = gene_ids,
+        organism = species_for_collection,
+        universe = background_genes,  # Add universe
+        pvalueCutoff = 0.05,
+        qvalueCutoff = 0.2
+      ),
+      "wikipathways" = enrichWP(
+        gene = gene_ids,
+        organism = species_for_collection,
+        pvalueCutoff = 0.05
+      ),
+      stop("Invalid pathway collection specified.")
+    )
 
-  # Perform enrichment analysis based on pathway collection
-  ora_results <- switch(
-    tolower(opt$pathway_collection),
-    "go" = enrichGO(
-      gene = gene_ids,
-      OrgDb = getOrgDb(opt$species, "GO"),
-      keyType = "ENTREZID",
-      universe = background_genes,
-      ont = "ALL",
-      pvalueCutoff = 0.05,
-      qvalueCutoff = 0.2
-    ),
-    "kegg" = enrichKEGG(
-      gene = gene_ids,
-      organism = species_for_collection,
-      keyType = "kegg",
-      universe = background_genes,  # Add universe
-      pvalueCutoff = 0.05,
-      use_internal_data = TRUE
-    ),
-    "reactome" = enrichPathway(
-      gene = gene_ids,
-      organism = species_for_collection,
-      universe = background_genes,  # Add universe
-      pvalueCutoff = 0.05,
-      qvalueCutoff = 0.2
-    ),
-    "wikipathways" = enrichWP(
-      gene = gene_ids,
-      organism = species_for_collection,
-      pvalueCutoff = 0.05
-    ),
-    stop("Invalid pathway collection specified.")
-  )
+    if (is.null(ora_results) || nrow(as.data.frame(ora_results)) == 0) {
+      message("No significant pathways found or analysis could not be performed.")
 
-  if (is.null(ora_results) || nrow(as.data.frame(ora_results)) == 0) {
-    message("No significant pathways found or analysis could not be performed.")
+      # Define placeholder column names
+      if (opt$pathway_collection == "GO") {
+        placeholder_columns <- c("ONTOLOGY", "ID", "Description", "GeneRatio",
+                              "BgRatio", "RichFactor", "FoldEnrichment", "zScore",
+                              "pvalue", "p.adjust", "qvalue", "geneID", "Count",
+                              "minlog10padj")
+      } else {
+        placeholder_columns <- c("ID", "Description", "GeneRatio",
+                                "BgRatio", "RichFactor", "FoldEnrichment", "zScore",
+                                "pvalue", "p.adjust", "qvalue", "geneID", "Count",
+                                "minlog10padj")
+      }
+      # Create a placeholder empty data frame
+      placeholder_df <- as.data.frame(matrix(ncol = length(placeholder_columns),
+                                            nrow = 0))
+      colnames(placeholder_df) <- placeholder_columns
 
+      return(placeholder_df)
+    }
+
+    # Add -log10(p.adjust) column
+    enriched_results <- as.data.frame(ora_results)
+    enriched_results$`minlog10padj` <- -log10(enriched_results$p.adjust)
+
+  # No input genes
+  } else {
+    print(paste("Number of", dir_label, "input genes: 0"))
+    print(paste("Skipping analysis for empty tables..."))
     # Define placeholder column names
-    placeholder_columns <- c("ONTOLOGY", "ID", "Description", "GeneRatio",
-                             "BgRatio", "RichFactor", "FoldEnrichment",
-                             "zScore", "pvalue", "p.adjust", "qvalue", "geneID",
-                             "Count", "minlog10padj")
-
+    if (opt$pathway_collection == "GO") {
+      placeholder_columns <- c("ONTOLOGY", "ID", "Description", "GeneRatio",
+                            "BgRatio", "RichFactor", "FoldEnrichment", "zScore",
+                            "pvalue", "p.adjust", "qvalue", "geneID", "Count",
+                            "minlog10padj")
+    } else {
+      placeholder_columns <- c("ID", "Description", "GeneRatio",
+                              "BgRatio", "RichFactor", "FoldEnrichment", "zScore",
+                              "pvalue", "p.adjust", "qvalue", "geneID", "Count",
+                              "minlog10padj")
+    }
     # Create a placeholder empty data frame
     placeholder_df <- as.data.frame(matrix(ncol = length(placeholder_columns),
                                            nrow = 0))
@@ -197,10 +232,6 @@ runORA <- function(trend_data, dir_label) {
 
     return(placeholder_df)
   }
-
-  # Add -log10(p.adjust) column
-  enriched_results <- as.data.frame(ora_results)
-  enriched_results$`minlog10padj` <- -log10(enriched_results$p.adjust)
 
   return(enriched_results)
 }
@@ -223,17 +254,44 @@ for (subs in subsets) {
 
   # Run the analysis for specific subset
   df <- runORA(trend_data, dir_label = subs)
-  df["regDirection"] <- toString(subset_naming[subs])
-  # Convert gene ratio to gene %
-  df["GenePercent"] <- unlist(lapply(strsplit(df[, "GeneRatio"], "/"),
-                                     function(v) as.integer(v[1]) / as.integer(v[2]) * 100))
+  # Continue only if there are results
+  if (nrow(df) > 0) {
+    df["regDirection"] <- toString(subset_naming[subs])
+    # Convert gene ratio to gene %
+    df["GenePercent"] <- unlist(lapply(strsplit(df[, "GeneRatio"], "/"),
+                                      function(v) as.integer(v[1]) / as.integer(v[2]) * 100))
 
-  # Combine all results in the same dataframe
-  enriched_results <- rbind(enriched_results, df)
+    # Combine all results in the same dataframe
+    enriched_results <- rbind(enriched_results, df)
 
-  # Combine top results in same table
-  top10_results <- rbind(top10_results,
-                         head(as.data.frame(df[order(df$p.adjust), ]), 10))
+    # Combine top results in same table
+    # For GO we get top 10 per ontology
+    if (opt$pathway_collection == "GO") {
+      top_row <- c()
+      ontology_list <- unique(df["ONTOLOGY"])
+      ontology_list <- ontology_list[!is.na(ontology_list)]
+      for (onto in ontology_list) {
+        pos <- df["ONTOLOGY"] == onto & !(is.na(df["ONTOLOGY"]))
+        top_row <- c(top_row, 
+                    rownames(head(df[pos, ][order(df[pos, ]$p.adjust), ], 10)))
+      }
+      top10_results <- rbind(top10_results,
+                            df[top_row, ])
+    } else {
+      top10_results <- rbind(top10_results,
+                            head(as.data.frame(df[order(df$p.adjust), ]), 10))
+    }
+  # If no results, just add needed columns
+  } else {
+    # Add new columns and turn frame to empty again
+    df[1, ] <- NA
+    df[, c("regDirection", "GenePercent")] <- NA
+    df <- df[0, ]
+
+    # Combine with main tables for rare cases in which we will have no results at all
+    enriched_results <- rbind(enriched_results, df)
+    top10_results <- rbind(top10_results, df)
+  }
 }
 
 # Define output file paths
