@@ -50,9 +50,10 @@ export const model = BlockModel.create()
   })
 
   // Activate "Run" button only after these conditions are satisfied
-  .argsValid((ctx) => (ctx.args.geneListRef !== undefined)
-    && ((ctx.args.geneListRef !== undefined) && (ctx.args.geneListRef.length !== 0))
-    && (ctx.args.geneSubset.length !== 0))
+  .argsValid((ctx) => (
+    (ctx.args.geneListRef !== undefined) && (ctx.args.geneListRef.length !== 0))
+  && ((ctx.args.geneSubset !== undefined) && (ctx.args.geneSubset.length !== 0)),
+  )
 
   // User can only select as input regulationDirection lists
   // includeNativeLabel ensures regulationDirection pl7.app/label
