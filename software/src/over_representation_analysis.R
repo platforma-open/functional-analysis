@@ -111,10 +111,10 @@ mapSpecies <- function(speciesAbbr, collection) {
 convertEnsemblToEntrez <- function(ensembl_ids, species) {
   orgDbPackage <- mapSpecies(species, "GO")
   library(orgDbPackage, character.only = TRUE)
-  entrez_ids <- AnnotationDbi::mapIds(get(orgDbPackage), 
-                                      keys = ensembl_ids, 
-                                      column = "ENTREZID", 
-                                      keytype = "ENSEMBL", 
+  entrez_ids <- AnnotationDbi::mapIds(get(orgDbPackage),
+                                      keys = ensembl_ids,
+                                      column = "ENTREZID",
+                                      keytype = "ENSEMBL",
                                       multiVals = "first")
   return(entrez_ids)
 }
@@ -128,21 +128,24 @@ getOrgDb <- function(species, collection) {
 
 # Main function to perform over-representation analysis
 runORA <- function(trend_data, dir_label) {
-  print(paste("Running enrichment analysis for genes with following trend: ", dir_label))
+  print(paste("Running enrichment analysis for genes with following trend: ",
+              dir_label))
 
   # Map Ensembl IDs to Entrez IDs
-  trend_data$EntrezId <- convertEnsemblToEntrez(as.character(trend_data$Ensembl.Id), opt$species)
+  trend_data$EntrezId <- convertEnsemblToEntrez(as.character(trend_data$Ensembl.Id),
+                                                opt$species)
   trend_data <- trend_data[!is.na(trend_data$EntrezId), ]
   gene_ids <- as.character(trend_data$EntrezId)
-  
+
   # Set species mapping for pathway collection
   species_for_collection <- mapSpecies(opt$species, opt$pathway_collection)
   background_genes <- keys(getOrgDb(opt$species, "GO"), keytype = "ENTREZID")
-  
+
   # Debugging info
   print(paste("Number of", dir_label, "input genes:", length(gene_ids)))
-  print(paste("Number of", dir_label, "background genes:", length(background_genes)))
-  
+  print(paste("Number of", dir_label, "background genes:",
+              length(background_genes)))
+
   # Perform enrichment analysis based on pathway collection
   ora_results <- switch(
     tolower(opt$pathway_collection),
@@ -177,23 +180,24 @@ runORA <- function(trend_data, dir_label) {
     ),
     stop("Invalid pathway collection specified.")
   )
-  
+
   if (is.null(ora_results) || nrow(as.data.frame(ora_results)) == 0) {
     message("No significant pathways found or analysis could not be performed.")
-    
+
     # Define placeholder column names
     placeholder_columns <- c("ONTOLOGY", "ID", "Description", "GeneRatio",
-                            "BgRatio", "RichFactor", "FoldEnrichment", "zScore",
-                            "pvalue", "p.adjust", "qvalue", "geneID", "Count",
-                            "minlog10padj")
-    
+                             "BgRatio", "RichFactor", "FoldEnrichment",
+                             "zScore", "pvalue", "p.adjust", "qvalue", "geneID",
+                             "Count", "minlog10padj")
+
     # Create a placeholder empty data frame
-    placeholder_df <- as.data.frame(matrix(ncol = length(placeholder_columns), nrow = 0))
+    placeholder_df <- as.data.frame(matrix(ncol = length(placeholder_columns),
+                                           nrow = 0))
     colnames(placeholder_df) <- placeholder_columns
-    
+
     return(placeholder_df)
   }
-  
+
   # Add -log10(p.adjust) column
   enriched_results <- as.data.frame(ora_results)
   enriched_results$`minlog10padj` <- -log10(enriched_results$p.adjust)
@@ -204,40 +208,40 @@ runORA <- function(trend_data, dir_label) {
 # Load input data table
 gene_data <- read.csv(opt$input)
 # Get list of interest subsets
-subsets <- strsplit(opt$gene_subset, '_')[[1]]
+subsets <- strsplit(opt$gene_subset, "_")[[1]]
 
 enriched_results <- data.frame()
 top10_results <- data.frame()
 for (subs in subsets) {
   # Get list of genes with selected FC trend direction
   if (subs == "DEGs") {
-    pos <- gene_data[,2] %in% c("Up", "Down")
+    pos <- gene_data[, 2] %in% c("Up", "Down")
   } else {
-    pos <- gene_data[,2] == subs
+    pos <- gene_data[, 2] == subs
   }
-  trend_data <- gene_data[pos, ,drop = FALSE]
+  trend_data <- gene_data[pos, , drop = FALSE]
 
   # Run the analysis for specific subset
-  df <- runORA(trend_data, dir_label=subs)
+  df <- runORA(trend_data, dir_label = subs)
   df["regDirection"] <- toString(subset_naming[subs])
   # Convert gene ratio to gene %
-  df["GenePercent"] <- unlist(lapply(strsplit(df[,"GeneRatio"], "/"), 
-                                    function(v) as.integer(v[1])/as.integer(v[2])*100))
+  df["GenePercent"] <- unlist(lapply(strsplit(df[, "GeneRatio"], "/"),
+                                     function(v) as.integer(v[1]) / as.integer(v[2]) * 100))
 
   # Combine all results in the same dataframe
   enriched_results <- rbind(enriched_results, df)
 
   # Combine top results in same table
-  top10_results <- rbind(top10_results, 
-                          head(as.data.frame(df[order(df$p.adjust), ]), 10))
+  top10_results <- rbind(top10_results,
+                         head(as.data.frame(df[order(df$p.adjust), ]), 10))
 }
 
 # Define output file paths
 input_dir <- dirname(opt$input)
-results_file <- file.path(input_dir, 
-                        paste0("pathwayEnrichmentResults.csv"))
-top10_results_file <- file.path(input_dir, 
-                        paste0("top10PathwayEnrichmentResults.csv"))
+results_file <- file.path(input_dir,
+                          paste0("pathwayEnrichmentResults.csv"))
+top10_results_file <- file.path(input_dir,
+                                paste0("top10PathwayEnrichmentResults.csv"))
 # Save all results
 write.csv(as.data.frame(enriched_results), results_file, row.names = FALSE)
 # Save the top 10 results by p.adjust
