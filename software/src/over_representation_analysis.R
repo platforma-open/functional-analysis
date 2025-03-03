@@ -2,23 +2,34 @@
 
 # Install and load necessary libraries
 if (!requireNamespace("BiocManager", quietly = TRUE)) {
-  install.packages("BiocManager", repos = "https://cloud.r-project.org",
-                  quiet=TRUE)
+  stop("BiocManager not found!")
 }
 
-required_packages <- c(
-  "clusterProfiler", "AnnotationDbi", "ReactomePA", "optparse",
-  "org.Hs.eg.db", "org.Mm.eg.db", "org.Rn.eg.db", "org.Dr.eg.db", 
-  "org.Dm.eg.db", "org.At.tair.db", "org.Sc.sgd.db", "org.Ce.eg.db",
-  "org.Gg.eg.db", "org.Bt.eg.db", "org.Ss.eg.db"
-)
+library("clusterProfiler")
+library("AnnotationDbi")
+library("ReactomePA")
+library("optparse")
 
-for (pkg in required_packages) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-    BiocManager::install(pkg, ask = FALSE, quiet = TRUE)
-  }
-  suppressPackageStartupMessages(library(pkg, character.only = TRUE))
-}
+library("org.Hs.eg.db")
+library("org.Mm.eg.db")
+library("org.Rn.eg.db")
+library("org.Dr.eg.db")
+
+library("org.Dm.eg.db")
+library("org.At.tair.db")
+library("org.Sc.sgd.db")
+library("org.Ce.eg.db")
+
+library("org.Gg.eg.db")
+library("org.Bt.eg.db")
+library("org.Ss.eg.db")
+
+# for (pkg in required_packages) {
+#   if (!requireNamespace(pkg, quietly = TRUE)) {
+#     BiocManager::install(pkg, ask = FALSE, quiet = TRUE)
+#   }
+#   suppressPackageStartupMessages(library(pkg, character.only = TRUE))
+# }
 
 # Set up command line options
 option_list <- list(
