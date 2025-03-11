@@ -9,7 +9,7 @@ packages:
 catalog:
   '@platforma-sdk/model': ^1.22.59
   '@platforma-sdk/ui-vue': ^1.22.59
-  '@platforma-sdk/workflow-tengo': ^2.13.1
+  '@platforma-sdk/workflow-tengo': ^2.15.2
   '@platforma-sdk/block-tools': ^2.5.14
   '@platforma-sdk/test': ^1.21.60
   '@platforma-sdk/tengo-builder': ^1.17.7
@@ -17,8 +17,8 @@ catalog:
   '@milaboratories/software-pframes-conv': ^2.1.2
 
   '@platforma-open/milaboratories.software-small-binaries': ^1.15.6
-  '@platforma-open/milaboratories.runenv-r': ^1.2.18
-  '@platforma-sdk/package-builder': ^2.15.0
+  '@platforma-open/milaboratories.runenv-r-functional-analysis': ^1.0.3
+  '@platforma-sdk/package-builder': ^2.15.2
   '@platforma-sdk/eslint-config': ^1.0.1
 
   'vue': ^3.5.13

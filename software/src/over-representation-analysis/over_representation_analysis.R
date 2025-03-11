@@ -1,10 +1,5 @@
 #!/usr/bin/env Rscript
 
-# Install and load necessary libraries
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-  stop("BiocManager not found!")
-}
-
 library("clusterProfiler")
 library("AnnotationDbi")
 library("ReactomePA")
@@ -23,13 +18,6 @@ library("org.Ce.eg.db")
 library("org.Gg.eg.db")
 library("org.Bt.eg.db")
 library("org.Ss.eg.db")
-
-# for (pkg in required_packages) {
-#   if (!requireNamespace(pkg, quietly = TRUE)) {
-#     BiocManager::install(pkg, ask = FALSE, quiet = TRUE)
-#   }
-#   suppressPackageStartupMessages(library(pkg, character.only = TRUE))
-# }
 
 # Set up command line options
 option_list <- list(
