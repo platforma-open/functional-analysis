@@ -1,13 +1,14 @@
 {
   "name": "@platforma-open/milaboratories.functional-analysis.model",
-  "version": "2.1.0",
+  "version": "2.0.0",
   "description": "Block model",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup && vite build && block-tools build-model"
+    "build": "tsup && vite build && block-tools build-model",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@platforma-sdk/model": "catalog:",
@@ -17,7 +18,8 @@
     "@platforma-sdk/block-tools": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "tsup": "catalog:"
+    "tsup": "catalog:",
+    "@platforma-sdk/eslint-config": "catalog:"
   },
   "tsup": {
     "entry": [
