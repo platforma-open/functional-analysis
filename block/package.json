@@ -32,14 +32,15 @@
       "longDescription": "file:../docs/description.md",
       "changelog": "file:./CHANGELOG.md",
       "tags": [
-        "rna-seq",
+        "RNA-seq",
         "downstream"
       ],
       "organization": {
         "name": "MiLaboratories Inc",
         "url": "https://milaboratories.com/",
         "logo": "file:../logos/organization-logo.png"
-      }
+      },
+      "marketplaceRanking": 13600
     }
   },
   "devDependencies": {
