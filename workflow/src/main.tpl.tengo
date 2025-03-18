@@ -26,7 +26,6 @@ wf.body(func(args) {
 	oraTop10PFrameBuilder := pframes.pFrameBuilder()
 
 	// Iterate over list of inputs
-	// for idx in allIndexes {
 	for _, input in args.inputRegDir {
 		inputSpec := input.spec
 		
