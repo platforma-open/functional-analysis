@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.model
 
+## 2.1.0
+
+### Minor Changes
+
+- 818d935: Update page name
+
 ## 2.0.0
 
 ### Major Changes
