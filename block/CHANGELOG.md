@@ -1,5 +1,11 @@
 ## 1.0.0
 
+## 1.1.2
+
+### Patch Changes
+
+- 9501ba0: Updated tags and ranking
+
 ## 1.1.1
 
 ### Patch Changes
