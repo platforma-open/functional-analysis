@@ -1,10 +1,5 @@
 #!/usr/bin/env Rscript
 
-# Install and load necessary libraries
-if (!requireNamespace("BiocManager", quietly = TRUE)) {
-  stop("BiocManager not found!")
-}
-
 library("clusterProfiler")
 library("AnnotationDbi")
 library("ReactomePA")
@@ -23,13 +18,6 @@ library("org.Ce.eg.db")
 library("org.Gg.eg.db")
 library("org.Bt.eg.db")
 library("org.Ss.eg.db")
-
-# for (pkg in required_packages) {
-#   if (!requireNamespace(pkg, quietly = TRUE)) {
-#     BiocManager::install(pkg, ask = FALSE, quiet = TRUE)
-#   }
-#   suppressPackageStartupMessages(library(pkg, character.only = TRUE))
-# }
 
 # Set up command line options
 option_list <- list(
@@ -59,7 +47,7 @@ subset_naming <- c(
 mapSpecies <- function(speciesAbbr, collection) {
   mappings <- list(
     "GO" = list(
-      "homo-sapiens" = "org.Hs.eg.db",
+      "homo-sapiens" = "org.Hs.eg.db", 
       "mus-musculus" = "org.Mm.eg.db",
       "rattus-norvegicus" = "org.Rn.eg.db",
       "danio-rerio" = "org.Dr.eg.db",
@@ -141,11 +129,10 @@ getOrgDb <- function(species, collection) {
 runORA <- function(trend_data, dir_label) {
   print(paste("Running enrichment analysis for genes with following trend: ",
               dir_label))
-
   # Proceed only if we have genes with selected trend
   if (nrow(trend_data) != 0) {
     # Map Ensembl IDs to Entrez IDs
-    trend_data$EntrezId <- convertEnsemblToEntrez(as.character(trend_data$Ensembl.Id), 
+    trend_data$EntrezId <- convertEnsemblToEntrez(as.character(trend_data$Ensembl.Id),
                                                   opt$species)
     trend_data <- trend_data[!is.na(trend_data$EntrezId), ]
     gene_ids <- as.character(trend_data$EntrezId)
@@ -219,7 +206,8 @@ runORA <- function(trend_data, dir_label) {
 
     # Add -log10(p.adjust) column
     enriched_results <- as.data.frame(ora_results)
-    enriched_results$minlog10padj <- -log10(enriched_results$p.adjust)
+    enriched_results$`minlog10padj` <- -log10(enriched_results$p.adjust)
+
   # No input genes
   } else {
     print(paste("Number of", dir_label, "input genes: 0"))
@@ -261,7 +249,6 @@ for (subs in subsets) {
   } else {
     pos <- gene_data[, 2] == subs
   }
-
   trend_data <- gene_data[pos, , drop = FALSE]
 
   # Run the analysis for specific subset

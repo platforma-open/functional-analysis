@@ -8,48 +8,107 @@ pSpec := import("@platforma-sdk/workflow-tengo:pframes.spec")
 text := import("text")
 
 wf.prepare(func(args){
-	return{
-		inputRegDir: wf.resolve(args.geneListRef, { errIfMissing: true })
+	// This function can only accept one reference per key
+	inputRegDir := {}
+	regIndex := 1
+	for gList in args.geneListRef {
+		inputRegDir["inputRegDir" + string(regIndex)] = wf.resolve(gList, { errIfMissing: true })
+		regIndex = regIndex + 1
 	}
+	return {inputRegDir: inputRegDir}
 })
 
 wf.body(func(args) {
 
 	blockId := wf.blockId().getDataAsJson()
-	input := args.inputRegDir
-	inputSpec := input.spec
 
-	species := inputSpec.domain["pl7.app/species"]
-	pathwayCollection := args.pathwayCollection
+	oraPFrameBuilder := pframes.pFrameBuilder()
+	oraTop10PFrameBuilder := pframes.pFrameBuilder()
 
-	csvGeneList := xsv.exportFrame([input], "csv", {})
-	// Join subset options into string to input it as an argument for R
-	geneSubset := text.join(args.geneSubset, "_");
+	// Iterate over list of inputs
+	for _, input in args.inputRegDir {
+		inputSpec := input.spec
+		
+		contrast := inputSpec.annotations["pl7.app/label"]
+		species := inputSpec.domain["pl7.app/species"]
+		pathwayCollection := args.pathwayCollection
 
-	ORA := exec.builder().
-		software(assets.importSoftware("@platforma-open/milaboratories.functional-analysis.software:over-representation-analysis")).
-		arg("--input").arg("geneList.csv").
-		arg("--pathway_collection").arg(pathwayCollection).
-		arg("--species").arg(species).
-		arg("--gene_subset").arg(geneSubset).
-		addFile("geneList.csv", csvGeneList).
-		saveFile("pathwayEnrichmentResults.csv").
-		saveFile("top10PathwayEnrichmentResults.csv").
-		printErrStreamToStdout().
-		saveStdoutContent().
-		cache(24 * 60 * 60 * 1000).
-		run()
+		csvGeneList := xsv.exportFrame([input], "csv", {})
+		// Join subset options into string to input it as an argument for R
+		geneSubset := text.join(args.geneSubset, "_");
+		
+		ORA := exec.builder().
+			software(assets.importSoftware("@platforma-open/milaboratories.functional-analysis.software:over-representation-analysis")).
+			arg("--input").arg("geneList.csv").
+			arg("--pathway_collection").arg(pathwayCollection).
+			arg("--species").arg(species).
+			arg("--gene_subset").arg(geneSubset).
+			addFile("geneList.csv", csvGeneList).
+			saveFile("pathwayEnrichmentResults.csv").
+			saveFile("top10PathwayEnrichmentResults.csv").
+			printErrStreamToStdout().
+			saveStdoutContent().
+			cache(24 * 60 * 60 * 1000).
+			run()
 
-	ORAResImportParams := ORAResPfconvParamsLib.getColumns(inputSpec, pathwayCollection)
-	ORAPf := xsv.importFile(ORA.getFile("pathwayEnrichmentResults.csv"), "csv", ORAResImportParams)
-	ORATop10Pf := xsv.importFile(ORA.getFile("top10PathwayEnrichmentResults.csv"), "csv", ORAResImportParams)
+		ORAResImportParams := ORAResPfconvParamsLib.getColumns(inputSpec, pathwayCollection)
+		ORAPf := xsv.importFile(ORA.getFile("pathwayEnrichmentResults.csv"), "csv", ORAResImportParams, 
+															// This changes output format from default to per column
+															// So key will be column name and values spec and data
+															{splitDataAndSpec: true})
+		ORATop10Pf := xsv.importFile(ORA.getFile("top10PathwayEnrichmentResults.csv"), "csv", ORAResImportParams, 
+															{splitDataAndSpec: true})
+		// Runtime Error: assertion error: condition failed: field %!(EXTRA
+		// string="GO - Treated vs Control (UP\\Down-regulated gene list).spec", string=" is already set")
 
+		// Keep Pcolumns for export
+		for columnName, value in ORAPf { 
+			columnSpec := value.spec
+			// Include contrast in axes domain?
+			// for ax in columnSpec.axesSpec {
+			// 	ax.domain["pl7.app/contrast"] = contrast
+			// }
+			// Include contrast in annotation
+			columnSpec.annotations["pl7.app/contrast"] = contrast
+			columnData := value.data
+			oraPFrameBuilder.add(
+				contrast + " - " + columnName,
+				columnSpec,
+				columnData
+			)
+		}
+
+		for columnName, value in ORATop10Pf { 
+			columnSpec := value.spec
+			// Include contrast in axes domain?
+			// for ax in columnSpec.axesSpec {
+			// 	ax.domain["pl7.app/contrast"] = contrast
+			// }
+			// Include contrast in annotation
+			columnSpec.annotations["pl7.app/contrast"] = contrast
+			columnData := value.data
+			oraTop10PFrameBuilder.add(
+				contrast + " - " + columnName,
+				columnSpec,
+				columnData
+
+			)
+		}
+
+
+	}
+
+	// Build the final PFrames
+	oraPf := oraPFrameBuilder.build()
+	oraTop10Pf := oraTop10PFrameBuilder.build()
+
+	outputs := {
+		ORAPf: pframes.exportFrame(oraPf),
+		ORATop10Pf: pframes.exportFrame(oraTop10Pf)
+	}
+	
 	return {
-		outputs: {
-			ORAPf: pframes.exportFrame(ORAPf),
-			ORATop10Pf: pframes.exportFrame(ORATop10Pf)
-		},
-
+		outputs: outputs,
 		exports: {}
 	}
 })
