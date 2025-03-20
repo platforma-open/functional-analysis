@@ -1,5 +1,12 @@
 ## 1.0.0
 
+## 1.2.1
+
+### Patch Changes
+
+- Updated dependencies [de6fec7]
+  - @platforma-open/milaboratories.functional-analysis.ui@2.2.0
+
 ## 1.2.0
 
 ### Minor Changes

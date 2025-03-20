@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.ui
 
+## 2.2.0
+
+### Minor Changes
+
+- de6fec7: Fix dependency warning
+
 ## 2.1.0
 
 ### Minor Changes
