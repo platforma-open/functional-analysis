@@ -1,5 +1,20 @@
 ## 1.0.0
 
+## 1.2.0
+
+### Minor Changes
+
+- d124204: multiple DEG and new R env
+- 2c1dd56: Changeset after merge issues
+
+### Patch Changes
+
+- Updated dependencies [d124204]
+- Updated dependencies [2c1dd56]
+  - @platforma-open/milaboratories.functional-analysis.workflow@2.1.0
+  - @platforma-open/milaboratories.functional-analysis.model@2.2.0
+  - @platforma-open/milaboratories.functional-analysis.ui@2.1.0
+
 ## 1.1.2
 
 ### Patch Changes
