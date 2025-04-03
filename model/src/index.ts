@@ -7,6 +7,7 @@ import type {
   PlRef } from '@platforma-sdk/model';
 import {
   BlockModel,
+  createPFrameForGraphs,
   createPlDataTable,
   isPColumnSpec,
 } from '@platforma-sdk/model';
@@ -115,7 +116,7 @@ export const model = BlockModel.create()
       && (col.spec.annotations?.['pl7.app/contrast'] === ctx.uiState.contrast),
     );
 
-    return ctx.createPFrame([...pCols]);
+    return createPFrameForGraphs(ctx, pCols);
   })
 
   // Return PColumnIdAndSpec needed for default plot parameters
