@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.model
 
+## 2.3.0
+
+### Minor Changes
+
+- f7102ee: Update graph creation
+
 ## 2.2.0
 
 ### Minor Changes
