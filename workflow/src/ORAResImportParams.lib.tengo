@@ -2,7 +2,7 @@ ll := import("@platforma-sdk/workflow-tengo:ll")
 
 getColumns := func(species, pathwayCollection) {
 	cols := {
-		"axes": [
+		axes: [
 			{
 				"column": "ID",
 				// "id": "pathwayid",
@@ -34,7 +34,7 @@ getColumns := func(species, pathwayCollection) {
 				}
 			}
 			],
-		"columns": [
+		columns: [
 			{
 				"column": "Description",
 				"id": "pathwayname",

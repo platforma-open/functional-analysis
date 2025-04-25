@@ -132,15 +132,6 @@ export const model = BlockModel.create()
     return createPFrameForGraphs(ctx, pCols);
   })
 
-  .output('allEnrichmentPf', (ctx) => {
-    const pCols = ctx.outputs?.resolve('allEnrichmentPf')?.getPColumns();
-    if (pCols === undefined) {
-      return undefined;
-    }
-
-    return pCols;
-  })
-
   // Return PColumnIdAndSpec needed for default plot parameters
   .output('ORATop10Pcols', (ctx) => {
     let pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();

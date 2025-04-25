@@ -14,7 +14,6 @@ wf.prepare(func(args){
 })
 
 wf.body(func(args) {
-
 	blockId := wf.blockId().getDataAsJson()
 
 	/////////////////// /TEST
@@ -24,13 +23,32 @@ wf.body(func(args) {
 	input := args.inputRegDir
 	inputSpec := input.spec
 	contrast := inputSpec.annotations["pl7.app/label"]
-	species := inputSpec.domain["pl7.app/species"]
+	// CHECK CHECK CHECK Check if this path is the same in RNA
+	species := inputSpec.axesSpec[1].domain["pl7.app/species"]
 	pathwayCollection := args.pathwayCollection
 
-	targetOutputs := targetOutputsLib.getTargetOutputs(species, pathwayCollection, blockId)
+	ORAResImportParams := ORAResPfconvParamsLib.getColumns(inputSpec, pathwayCollection)
+
+	// targetOutputs := targetOutputsLib.getTargetOutputs(species, pathwayCollection, blockId)
+	targetOutputs := [
+	{
+		type: "Xsv",
+		xsvType: "csv",
+		settings: ORAResPfconvParamsLib.getColumns(species, pathwayCollection),
+		name: "allEnrichment",
+		path: ["allEnrichmentCsv"]
+	},
+	{
+		type: "Xsv",
+		xsvType: "csv",
+		settings: ORAResPfconvParamsLib.getColumns(species, pathwayCollection),
+		name: "topEnrichment",
+		path: ["topEnrichmentCsv"]
+	}]
 
 	enrichmentResults := pframes.processColumn(
-		{ spec: input.spec, data: input.data }, analysisTpl,
+		{ spec: input.spec, data: input.data },
+		analysisTpl,
 		targetOutputs,
 		// Aggregate is opposite from group, so we use aggregate to group by all other axis combinations
 		{
@@ -41,6 +59,8 @@ wf.body(func(args) {
 			// resulting aggregation axes names will be checked against supported combinations
 			// in the body template
 			passAggregationAxesNames: true,
+			// make specs available as __distilled_aggregation_spec__
+			passDistilledAggregationSpec: true,
 
 			// will be automatically propagated to all output specs
 			// traceSteps: [{type: "milaboratories.star-read-mapping", id: blockId, importance: 20, label: "STAR - " + genomes.getSpeciesName(species)}],
@@ -55,12 +75,13 @@ wf.body(func(args) {
 
 	/////////////////// /TEST
 
-	allEnrichmentPf := {
-		"allEnrichment.spec": enrichmentResults.outputSpec("allEnrichment"),
-		"allEnrichment.data": enrichmentResults.outputData("allEnrichment")
-	}
+	allEnrichmentPf := pframes.pFrameBuilder()
+	// add all columns from first selection results from enrichmentResults ("allEnrichment") into results under "allEnrichment/"
+	// Second string can be left empty, but important to have different values if you include multiple pframes into same builder
+	enrichmentResults.addXsvOutputToBuilder(allEnrichmentPf, "allEnrichment", "allEnrichment/")
 
-	
+	topEnrichmentPf := pframes.pFrameBuilder()
+	enrichmentResults.addXsvOutputToBuilder(topEnrichmentPf, "topEnrichment", "topEnrichment/")
 	
 	// ORAResImportParams := ORAResPfconvParamsLib.getColumns(inputSpec, pathwayCollection)
 	// ORAPf := xsv.importFile(ORA.getFile("pathwayEnrichmentResults.csv"), "csv", ORAResImportParams, 
@@ -72,15 +93,10 @@ wf.body(func(args) {
 	// // Runtime Error: assertion error: condition failed: field %!(EXTRA
 	// // string="GO - Treated vs Control (UP\\Down-regulated gene list).spec", string=" is already set")
 
-	ll := import("@platforma-sdk/workflow-tengo:ll")
-	maps := import("@platforma-sdk/workflow-tengo:maps")
-	ll.panic("%v", enrichmentResults.outputSpec("allEnrichment"))
-	
 
 	outputs := {
-		allEnrichmentPf: pframes.exportFrame(allEnrichmentPf),
-		ORATop10Pf: pframes.exportFrame(allEnrichmentPf),
-		ORAPf: pframes.exportFrame(allEnrichmentPf)
+		ORATop10Pf: pframes.exportFrame(topEnrichmentPf.build()),
+		ORAPf: pframes.exportFrame(allEnrichmentPf.build())
 
 	}
 	

@@ -20,13 +20,14 @@ self.body(func(inputs) {
     // but can be accessed with inputs.__value__
 
 	inputData := inputs[pConstants.VALUE_FIELD_NAME]
+    inputSpec := inputs.__distilled_aggregation_spec__
 	aggregationAxesNames := inputs[pConstants.AGGREGATION_AXES_NAMES_FIELD_NAME]
 
 	species := inputs.species
 	pathwayCollection := inputs.pathwayCollection
 	
 
-    csvGeneList := xsv.exportFrame([inputData], "csv", {})
+    csvGeneList := xsv.exportFrame([{data: inputData, spec: inputSpec}], "csv", {})
     // Join subset options into string to input it as an argument for R
     geneSubset := text.join(inputs.geneSubset, "_");
 
