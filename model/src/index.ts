@@ -9,6 +9,8 @@ import {
   BlockModel,
   createPFrameForGraphs,
   createPlDataTable,
+  getUniquePartitionKeys,
+  isPColumn,
   isPColumnSpec,
 } from '@platforma-sdk/model';
 
@@ -19,7 +21,7 @@ export type UiState = {
 };
 
 export type BlockArgs = {
-  geneListRef?: PlRef[];
+  geneListRef?: PlRef;
   pathwayCollection?: string;
   geneSubset: string[];
 };
@@ -52,8 +54,8 @@ export const model = BlockModel.create()
 
   // Activate "Run" button only after these conditions are satisfied
   .argsValid((ctx) => (
-    (ctx.args.geneListRef !== undefined) && (ctx.args.geneListRef.length !== 0))
-  && ((ctx.args.geneSubset !== undefined) && (ctx.args.geneSubset.length !== 0)),
+    (ctx.args.geneListRef !== undefined))
+  && ((ctx.args.geneSubset !== undefined)),
   )
 
   // User can only select as input regulationDirection lists
@@ -73,13 +75,24 @@ export const model = BlockModel.create()
 
     // Get the specs of the selected p-columns and extract contrast info
     const contrasts: string[] = [];
-    for (const gRef of ctx.args.geneListRef) {
-      const anchorSpec = ctx.resultPool.getSpecByRef(gRef);
-      if (anchorSpec?.annotations !== undefined) {
-        contrasts.push(anchorSpec.annotations['pl7.app/label']);
-      }
+    const anchorSpec = ctx.resultPool.getSpecByRef(ctx.args.geneListRef);
+    if (anchorSpec?.annotations !== undefined) {
+      contrasts.push(anchorSpec.annotations['pl7.app/label']);
     }
     return contrasts;
+  })
+
+  // Get list of possible partition key values (grouping axis)
+  .output('sheets', (ctx) => {
+    const mainColumn = ctx.args.geneListRef;
+    if (!mainColumn) return undefined;
+
+    const column = ctx.resultPool.getPColumnByRef(mainColumn);
+    if (!column) return undefined;
+
+    const r = getUniquePartitionKeys(column.data);
+    if (!r) return undefined;
+    return r;
   })
 
 // .output('datasetSpec', (ctx) => {
@@ -117,6 +130,15 @@ export const model = BlockModel.create()
     );
 
     return createPFrameForGraphs(ctx, pCols);
+  })
+
+  .output('allEnrichmentPf', (ctx) => {
+    const pCols = ctx.outputs?.resolve('allEnrichmentPf')?.getPColumns();
+    if (pCols === undefined) {
+      return undefined;
+    }
+
+    return pCols;
   })
 
   // Return PColumnIdAndSpec needed for default plot parameters

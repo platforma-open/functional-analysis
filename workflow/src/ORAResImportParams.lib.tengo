@@ -1,6 +1,6 @@
 ll := import("@platforma-sdk/workflow-tengo:ll")
 
-getColumns := func(inputSpec, pathwayCollection) {
+getColumns := func(species, pathwayCollection) {
 	cols := {
 		"axes": [
 			{
@@ -11,11 +11,10 @@ getColumns := func(inputSpec, pathwayCollection) {
 					"name": "pl7.app/rna-seq/pathwayid",
 					"type": "String",
 					"domain": {
-						"pl7.app/species": inputSpec.domain["pl7.app/species"]
+						"pl7.app/species": species
 					},
 					"annotations": {
 						"pl7.app/label": "Pathway ID",
-						"pl7.app/contrast": inputSpec.annotations["pl7.app/label"],
 						"pl7.app/table/orderPriority": "100"
 					}
 			}
@@ -26,11 +25,10 @@ getColumns := func(inputSpec, pathwayCollection) {
 					"name": "pl7.app/rna-seq/pathwayRegDir",
 					"type": "String",
 					"domain": {
-						"pl7.app/species": inputSpec.domain["pl7.app/species"]
+						"pl7.app/species": species
 					},
 					"annotations": {
 						"pl7.app/label": "DEG subset",
-						"pl7.app/contrast": inputSpec.annotations["pl7.app/label"],
 						"pl7.app/table/orderPriority": "90"
 					}
 				}

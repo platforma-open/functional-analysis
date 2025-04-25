@@ -8,103 +8,80 @@ pSpec := import("@platforma-sdk/workflow-tengo:pframes.spec")
 text := import("text")
 
 wf.prepare(func(args){
-	// This function can only accept one reference per key
-	inputRegDir := {}
-	regIndex := 1
-	for gList in args.geneListRef {
-		inputRegDir["inputRegDir" + string(regIndex)] = wf.resolve(gList, { errIfMissing: true })
-		regIndex = regIndex + 1
-	}
-	return {inputRegDir: inputRegDir}
+	return {
+		inputRegDir: wf.resolve(args.geneListRef, { errIfMissing: true })
+		}
 })
 
 wf.body(func(args) {
 
 	blockId := wf.blockId().getDataAsJson()
 
-	oraPFrameBuilder := pframes.pFrameBuilder()
-	oraTop10PFrameBuilder := pframes.pFrameBuilder()
+	/////////////////// /TEST
+	analysisTpl := assets.importTemplate(":test")
+	targetOutputsLib := import(":target-outputs")
 
-	// Iterate over list of inputs
-	for _, input in args.inputRegDir {
-		inputSpec := input.spec
-		
-		contrast := inputSpec.annotations["pl7.app/label"]
-		species := inputSpec.domain["pl7.app/species"]
-		pathwayCollection := args.pathwayCollection
+	input := args.inputRegDir
+	inputSpec := input.spec
+	contrast := inputSpec.annotations["pl7.app/label"]
+	species := inputSpec.domain["pl7.app/species"]
+	pathwayCollection := args.pathwayCollection
 
-		csvGeneList := xsv.exportFrame([input], "csv", {})
-		// Join subset options into string to input it as an argument for R
-		geneSubset := text.join(args.geneSubset, "_");
-		
-		ORA := exec.builder().
-			software(assets.importSoftware("@platforma-open/milaboratories.functional-analysis.software:over-representation-analysis")).
-			arg("--input").arg("geneList.csv").
-			arg("--pathway_collection").arg(pathwayCollection).
-			arg("--species").arg(species).
-			arg("--gene_subset").arg(geneSubset).
-			addFile("geneList.csv", csvGeneList).
-			saveFile("pathwayEnrichmentResults.csv").
-			saveFile("top10PathwayEnrichmentResults.csv").
-			printErrStreamToStdout().
-			saveStdoutContent().
-			cache(24 * 60 * 60 * 1000).
-			run()
+	targetOutputs := targetOutputsLib.getTargetOutputs(species, pathwayCollection, blockId)
 
-		ORAResImportParams := ORAResPfconvParamsLib.getColumns(inputSpec, pathwayCollection)
-		ORAPf := xsv.importFile(ORA.getFile("pathwayEnrichmentResults.csv"), "csv", ORAResImportParams, 
-															// This changes output format from default to per column
-															// So key will be column name and values spec and data
-															{splitDataAndSpec: true})
-		ORATop10Pf := xsv.importFile(ORA.getFile("top10PathwayEnrichmentResults.csv"), "csv", ORAResImportParams, 
-															{splitDataAndSpec: true})
-		// Runtime Error: assertion error: condition failed: field %!(EXTRA
-		// string="GO - Treated vs Control (UP\\Down-regulated gene list).spec", string=" is already set")
+	enrichmentResults := pframes.processColumn(
+		{ spec: input.spec, data: input.data }, analysisTpl,
+		targetOutputs,
+		// Aggregate is opposite from group, so we use aggregate to group by all other axis combinations
+		{
+			aggregate: [{
+				name: "pl7.app/rna-seq/geneId",
+				optional: true
+			}],
+			// resulting aggregation axes names will be checked against supported combinations
+			// in the body template
+			passAggregationAxesNames: true,
 
-		// Keep Pcolumns for export
-		for columnName, value in ORAPf { 
-			columnSpec := value.spec
-			// Include contrast in axes domain?
-			// for ax in columnSpec.axesSpec {
-			// 	ax.domain["pl7.app/contrast"] = contrast
-			// }
-			// Include contrast in annotation
-			columnSpec.annotations["pl7.app/contrast"] = contrast
-			columnData := value.data
-			oraPFrameBuilder.add(
-				contrast + " - " + columnName,
-				columnSpec,
-				columnData
-			)
+			// will be automatically propagated to all output specs
+			// traceSteps: [{type: "milaboratories.star-read-mapping", id: blockId, importance: 20, label: "STAR - " + genomes.getSpeciesName(species)}],
+
+			extra: {
+				species: species,
+				pathwayCollection: pathwayCollection,
+				geneSubset: args.geneSubset
+				}
 		}
+	)
 
-		for columnName, value in ORATop10Pf { 
-			columnSpec := value.spec
-			// Include contrast in axes domain?
-			// for ax in columnSpec.axesSpec {
-			// 	ax.domain["pl7.app/contrast"] = contrast
-			// }
-			// Include contrast in annotation
-			columnSpec.annotations["pl7.app/contrast"] = contrast
-			columnData := value.data
-			oraTop10PFrameBuilder.add(
-				contrast + " - " + columnName,
-				columnSpec,
-				columnData
+	/////////////////// /TEST
 
-			)
-		}
-
-
+	allEnrichmentPf := {
+		"allEnrichment.spec": enrichmentResults.outputSpec("allEnrichment"),
+		"allEnrichment.data": enrichmentResults.outputData("allEnrichment")
 	}
 
-	// Build the final PFrames
-	oraPf := oraPFrameBuilder.build()
-	oraTop10Pf := oraTop10PFrameBuilder.build()
+	
+	
+	// ORAResImportParams := ORAResPfconvParamsLib.getColumns(inputSpec, pathwayCollection)
+	// ORAPf := xsv.importFile(ORA.getFile("pathwayEnrichmentResults.csv"), "csv", ORAResImportParams, 
+	// 													// This changes output format from default to per column
+	// 													// So key will be column name and values spec and data
+	// 													{splitDataAndSpec: true})
+	// ORATop10Pf := xsv.importFile(ORA.getFile("top10PathwayEnrichmentResults.csv"), "csv", ORAResImportParams, 
+	// 													{splitDataAndSpec: true})
+	// // Runtime Error: assertion error: condition failed: field %!(EXTRA
+	// // string="GO - Treated vs Control (UP\\Down-regulated gene list).spec", string=" is already set")
+
+	ll := import("@platforma-sdk/workflow-tengo:ll")
+	maps := import("@platforma-sdk/workflow-tengo:maps")
+	ll.panic("%v", enrichmentResults.outputSpec("allEnrichment"))
+	
 
 	outputs := {
-		ORAPf: pframes.exportFrame(oraPf),
-		ORATop10Pf: pframes.exportFrame(oraTop10Pf)
+		allEnrichmentPf: pframes.exportFrame(allEnrichmentPf),
+		ORATop10Pf: pframes.exportFrame(allEnrichmentPf),
+		ORAPf: pframes.exportFrame(allEnrichmentPf)
+
 	}
 	
 	return {

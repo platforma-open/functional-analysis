@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type {
   PlDataTableSettings } from '@platforma-sdk/ui-vue';
-import { listToOptions, PlAgDataTable, PlBlockPage, PlBtnGhost, PlCheckboxGroup, PlDropdown, PlDropdownMultiRef,
+import { listToOptions, PlAgDataTable, PlBlockPage, PlBtnGhost, PlCheckboxGroup, PlDropdown, PlDropdownRef,
   PlMaskIcon24, PlSlideModal } from '@platforma-sdk/ui-vue';
 import { useApp } from '../app';
 import { computed, ref, watch } from 'vue';
@@ -72,7 +72,7 @@ watch(() => app.model.outputs.geneListOptions, (_) => {
 
     <PlSlideModal v-model="settingsAreShown">
       <template #title>Settings</template>
-      <PlDropdownMultiRef
+      <PlDropdownRef
         v-model="app.model.args.geneListRef" :options="app.model.outputs.geneListOptions"
         label="Select gene list"
       />
