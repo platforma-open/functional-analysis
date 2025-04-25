@@ -60,13 +60,13 @@ function getDefaultOptions(ORATop10Pcols?: PColumnIdAndSpec[]) {
 // Steps needed to reset graph maker after changing input table
 const defaultOptions = ref(getDefaultOptions(app.model.outputs.ORATop10Pcols));
 
-// Updata grpahstate every time we switch between pathways
+// Updata graphstate every time we switch between pathways
 const graphMakerRef = useTemplateRef('graphMaker');
-// watch(() => app.model.outputs.ORATop10Pcols, (topTablePcols) => {
-//   delete app.model.ui.graphState.optionsState;
-//   defaultOptions.value = getDefaultOptions(topTablePcols);
-//   graphMakerRef.value?.reset();
-// });
+watch(() => app.model.outputs.ORATop10Pcols, (topTablePcols) => {
+  delete app.model.ui.graphState.optionsState;
+  defaultOptions.value = getDefaultOptions(topTablePcols);
+  graphMakerRef.value?.reset();
+});
 
 </script>
 
