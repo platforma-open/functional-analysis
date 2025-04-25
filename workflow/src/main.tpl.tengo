@@ -16,7 +16,6 @@ wf.prepare(func(args){
 wf.body(func(args) {
 	blockId := wf.blockId().getDataAsJson()
 
-	/////////////////// /TEST
 	analysisTpl := assets.importTemplate(":test")
 	targetOutputsLib := import(":target-outputs")
 
@@ -29,7 +28,6 @@ wf.body(func(args) {
 
 	ORAResImportParams := ORAResPfconvParamsLib.getColumns(inputSpec, pathwayCollection)
 
-	// targetOutputs := targetOutputsLib.getTargetOutputs(species, pathwayCollection, blockId)
 	targetOutputs := [
 	{
 		type: "Xsv",
@@ -73,7 +71,6 @@ wf.body(func(args) {
 		}
 	)
 
-	/////////////////// /TEST
 
 	allEnrichmentPf := pframes.pFrameBuilder()
 	// add all columns from first selection results from enrichmentResults ("allEnrichment") into results under "allEnrichment/"
@@ -82,18 +79,6 @@ wf.body(func(args) {
 
 	topEnrichmentPf := pframes.pFrameBuilder()
 	enrichmentResults.addXsvOutputToBuilder(topEnrichmentPf, "topEnrichment", "topEnrichment/")
-	
-	// ORAResImportParams := ORAResPfconvParamsLib.getColumns(inputSpec, pathwayCollection)
-	// ORAPf := xsv.importFile(ORA.getFile("pathwayEnrichmentResults.csv"), "csv", ORAResImportParams, 
-	// 													// This changes output format from default to per column
-	// 													// So key will be column name and values spec and data
-	// 													{splitDataAndSpec: true})
-	// ORATop10Pf := xsv.importFile(ORA.getFile("top10PathwayEnrichmentResults.csv"), "csv", ORAResImportParams, 
-	// 													{splitDataAndSpec: true})
-	// // Runtime Error: assertion error: condition failed: field %!(EXTRA
-	// // string="GO - Treated vs Control (UP\\Down-regulated gene list).spec", string=" is already set")
-
-
 	outputs := {
 		ORATop10Pf: pframes.exportFrame(topEnrichmentPf.build()),
 		ORAPf: pframes.exportFrame(allEnrichmentPf.build())

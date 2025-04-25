@@ -125,21 +125,7 @@ getColumns := func(species, pathwayCollection) {
 						"pl7.app/table/orderPriority": "30"
 					}
 				}
-			}//,
-			// To be included in the future for enrichment dotblots
-			// {
-			// 	"column": "Count",
-			// 	"id": "Count",
-			// 	"allowNA": true,
-			// 	"spec": {
-			// 		"name": "pl7.app/rna-seq/geneCount",
-			// 		"valueType": "Integer",
-			// 		"annotations": {
-			// 			"pl7.app/label": "Gene count",
-			// 			"pl7.app/table/orderPriority": "30"
-			// 		}
-			// 	}
-			// }
+			}
 			],
 		"storageFormat": "Binary",
 		"partitionKeyLength": 0

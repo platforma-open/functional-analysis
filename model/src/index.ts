@@ -69,47 +69,11 @@ export const model = BlockModel.create()
     { includeNativeLabel: true, addLabelAsSuffix: true }),
   )
 
-  .output('contrastList', (ctx): string[] | undefined => {
-    // Make sure input contrast results have been selected
-    if (!ctx.args.geneListRef) return undefined;
-
-    // Get the specs of the selected p-columns and extract contrast info
-    const contrasts: string[] = [];
-    const anchorSpec = ctx.resultPool.getSpecByRef(ctx.args.geneListRef);
-    if (anchorSpec?.annotations !== undefined) {
-      contrasts.push(anchorSpec.annotations['pl7.app/label']);
-    }
-    return contrasts;
-  })
-
-  // Get list of possible partition key values (grouping axis)
-  .output('sheets', (ctx) => {
-    const mainColumn = ctx.args.geneListRef;
-    if (!mainColumn) return undefined;
-
-    const column = ctx.resultPool.getPColumnByRef(mainColumn);
-    if (!column) return undefined;
-
-    const r = getUniquePartitionKeys(column.data);
-    if (!r) return undefined;
-    return r;
-  })
-
-// .output('datasetSpec', (ctx) => {
-//   if (ctx.args.geneListRef) return ctx.resultPool.getSpecByRef(ctx.args.geneListRef);
-//   else return undefined;
-// })
-
   .output('ORApt', (ctx) => {
-    let pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
+    const pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
-
-    // Filter by selected contrast
-    pCols = pCols.filter(
-      (col) => (col.spec.annotations?.['pl7.app/contrast'] === ctx.uiState.contrast),
-    );
 
     return createPlDataTable(ctx, pCols, ctx.uiState?.tableState);
   })
@@ -124,9 +88,7 @@ export const model = BlockModel.create()
       (col) => (
         // Filter out Gene/Background Ratio pColumns
         col.spec.name !== 'pl7.app/rna-seq/BgRatio')
-      && (col.spec.name !== 'pl7.app/rna-seq/GeneRatio')
-      // Filter by selected contrast
-      && (col.spec.annotations?.['pl7.app/contrast'] === ctx.uiState.contrast),
+      && (col.spec.name !== 'pl7.app/rna-seq/GeneRatio'),
     );
 
     return createPFrameForGraphs(ctx, pCols);
@@ -134,15 +96,10 @@ export const model = BlockModel.create()
 
   // Return PColumnIdAndSpec needed for default plot parameters
   .output('ORATop10Pcols', (ctx) => {
-    let pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
+    const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
-
-    // Filter by selected contrast
-    pCols = pCols.filter(
-      (col) => (col.spec.annotations?.['pl7.app/contrast'] === ctx.uiState.contrast),
-    );
 
     return pCols.map(
       (c) =>
