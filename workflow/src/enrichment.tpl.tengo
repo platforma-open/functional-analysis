@@ -10,6 +10,7 @@ pframes := import("@platforma-sdk/workflow-tengo:pframes")
 pConstants := import("@platforma-sdk/workflow-tengo:pframes.constants")
 slices := import("@platforma-sdk/workflow-tengo:slices")
 feats := import("@platforma-sdk/workflow-tengo:feats")
+pt := import("@platforma-sdk/workflow-tengo:pt")
 
 self.defineOutputs("allEnrichmentCsv",
 	"topEnrichmentCsv")
@@ -30,6 +31,21 @@ self.body(func(inputs) {
     inputSpec.annotations = {"pl7.app/label": "Regulation direction"}
 
     csvGeneList := xsv.exportFrame([{data: inputData, spec: inputSpec}], "csv", {})
+
+    // Filter rows by given contrast
+    wf := pt.workflow()
+    // Read the CSV
+    df := wf.frame(csvGeneList, {xsvType: "csv"})
+    // Filter by contrast value and save result
+    filteredDf := df.filter(
+        pt.col("Contrast").eq(pt.lit(inputs.contrast))
+    )
+    filteredDf.save("filtered_table.csv")
+    // Run the workflow
+    ptablerResult := wf.run()
+    // export new file
+    csvGeneList_filtered := xsv.exportFrame([{data: ptablerResult.getFile("filtered_genes.csv"), spec: inputSpec}], "csv", {})
+
     // Join subset options into string to input it as an argument for R
     geneSubset := text.join(inputs.geneSubset, "_");
 
@@ -39,7 +55,7 @@ self.body(func(inputs) {
         arg("--pathway_collection").arg(pathwayCollection).
         arg("--species").arg(species).
         arg("--gene_subset").arg(geneSubset).
-        addFile("geneList.csv", csvGeneList).
+        addFile("geneList.csv", csvGeneList_filtered).
         saveFile("pathwayEnrichmentResults.csv").
         saveFile("top10PathwayEnrichmentResults.csv").
         printErrStreamToStdout().

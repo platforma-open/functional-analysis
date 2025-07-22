@@ -7,6 +7,8 @@ pframes := import("@platforma-sdk/workflow-tengo:pframes")
 pSpec := import("@platforma-sdk/workflow-tengo:pframes.spec")
 text := import("text")
 
+analysisTpl := assets.importTemplate(":enrichment")
+
 wf.prepare(func(args){
 	return {
 		inputRegDir: wf.resolve(args.geneListRef, { errIfMissing: true })
@@ -16,13 +18,11 @@ wf.prepare(func(args){
 wf.body(func(args) {
 	blockId := wf.blockId().getDataAsJson()
 
-	analysisTpl := assets.importTemplate(":test")
+	
 	targetOutputsLib := import(":target-outputs")
 
 	input := args.inputRegDir
 	inputSpec := input.spec
-	contrast := inputSpec.annotations["pl7.app/label"]
-	// CHECK CHECK CHECK Check if this path is the same in RNA
 	species := inputSpec.axesSpec[1].domain["pl7.app/species"]
 	pathwayCollection := args.pathwayCollection
 
@@ -66,7 +66,8 @@ wf.body(func(args) {
 			extra: {
 				species: species,
 				pathwayCollection: pathwayCollection,
-				geneSubset: args.geneSubset
+				geneSubset: args.geneSubset,
+				contrast: args.contrast
 				}
 		}
 	)

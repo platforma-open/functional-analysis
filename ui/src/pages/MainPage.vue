@@ -1,24 +1,35 @@
 <script setup lang="ts">
-import type {
-  PlDataTableSettings } from '@platforma-sdk/ui-vue';
-import { PlAgDataTable, PlBlockPage, PlBtnGhost, PlCheckboxGroup, PlDropdown, PlDropdownRef,
-  PlMaskIcon24, PlSlideModal } from '@platforma-sdk/ui-vue';
-import { useApp } from '../app';
+import {
+  PlAgDataTableV2,
+  PlBlockPage,
+  PlBtnGhost,
+  PlCheckboxGroup,
+  PlDropdown,
+  PlDropdownRef,
+  PlMaskIcon24,
+  PlSlideModal,
+  usePlDataTableSettingsV2,
+} from '@platforma-sdk/ui-vue';
 import { computed, ref } from 'vue';
+import { useApp } from '../app';
 
 const app = useApp();
 
-const tableSettings = computed<PlDataTableSettings>(() => ({
-  sourceType: 'ptable',
-
-  pTable: app.model.outputs.ORApt,
-
-} satisfies PlDataTableSettings));
+const tableSettings = usePlDataTableSettingsV2({
+  model: () => app.model.outputs.ORApt,
+});
 
 const settingsAreShown = ref(app.model.outputs.ORApt === undefined);
 const showSettings = () => {
   settingsAreShown.value = true;
 };
+
+const contrastOptions = computed(() => {
+  return app.model.outputs.contrastOptions?.map((v) => ({
+    value: v,
+    label: v,
+  }));
+});
 
 const pathwayCollectionOptions = [
   { label: 'Gene Ontology (GO)', value: 'GO' },
@@ -54,6 +65,11 @@ const geneSubsetOptions = [
         v-model="app.model.args.geneListRef" :options="app.model.outputs.geneListOptions"
         label="Select gene list"
       />
+      <PlDropdown v-model="app.model.args.contrast" :options="contrastOptions" label="Contrast" >
+        <template #tooltip>
+          Select contrast of interest for functional analysis
+        </template>
+      </PlDropdown>
       <PlDropdown v-model="app.model.args.pathwayCollection" :options="pathwayCollectionOptions" label="Select pathway collection" />
       <!-- Option buttons to choose how to do GO analysis -->
       <PlCheckboxGroup v-model="app.model.args.geneSubset" label="Select gene subsets" :options="geneSubsetOptions" >
@@ -64,6 +80,6 @@ const geneSubsetOptions = [
       </PlCheckboxGroup>
     </PlSlideModal>
 
-    <PlAgDataTable v-if="app.model.ui" v-model="app.model.ui.tableState" :settings="tableSettings" />
+    <PlAgDataTableV2 v-if="app.model.ui" v-model="app.model.ui.tableState" :settings="tableSettings" />
   </PlBlockPage>
 </template>

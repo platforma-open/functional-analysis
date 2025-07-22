@@ -3,27 +3,26 @@ import type {
   InferOutputsType,
   PColumnIdAndSpec,
   PFrameHandle,
-  PlDataTableState,
-  PlRef } from '@platforma-sdk/model';
+  PlDataTableStateV2,
+  PlRef,
+} from '@platforma-sdk/model';
 import {
   BlockModel,
   createPFrameForGraphs,
-  createPlDataTable,
-  getUniquePartitionKeys,
-  isPColumn,
+  createPlDataTableV2,
   isPColumnSpec,
 } from '@platforma-sdk/model';
 
 export type UiState = {
-  tableState: PlDataTableState;
+  tableState: PlDataTableStateV2;
   graphState: GraphMakerState;
-  contrast?: string;
 };
 
 export type BlockArgs = {
   geneListRef?: PlRef;
   pathwayCollection?: string;
   geneSubset: string[];
+  contrast?: string;
 };
 
 export const model = BlockModel.create()
@@ -69,13 +68,37 @@ export const model = BlockModel.create()
     { includeNativeLabel: true, addLabelAsSuffix: true }),
   )
 
+  .output('contrastOptions', (ctx) => {
+    if (!ctx.args.geneListRef) return undefined;
+
+    // Get the contrastExport p-column from the result pool
+    const contrastExport = ctx.resultPool.getData()
+      .entries
+      .map((entry) => entry.obj)
+      .find((col) =>
+        isPColumnSpec(col.spec)
+        && col.spec.name === 'pl7.app/label'
+        && col.spec.annotations?.['pl7.app/isLabel'] === 'true'
+        && col.spec.axesSpec?.[0]?.name === 'pl7.app/rna-seq/contrastGroup',
+      );
+
+    if (contrastExport) {
+      // Get the contrast values from the p-column data
+      const contrastData = contrastExport.data?.getDataAsJson<Record<string, string>>();
+      if (contrastData?.data) {
+        return [...new Set(Object.values(contrastData.data))];
+      }
+    }
+    return undefined;
+  })
+
   .output('ORApt', (ctx) => {
     const pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
 
-    return createPlDataTable(ctx, pCols, ctx.uiState?.tableState);
+    return createPlDataTableV2(ctx, pCols, ctx.uiState?.tableState);
   })
 
   .output('ORATop10Pf', (ctx): PFrameHandle | undefined => {
