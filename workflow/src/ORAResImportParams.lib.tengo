@@ -134,7 +134,97 @@ getColumns := func(species, pathwayCollection) {
 					"valueType": "String",
 					"annotations": {
 						"pl7.app/label": "Background ratio",
-						"pl7.app/table/orderPriority": "30"
+						"pl7.app/table/orderPriority": "30",
+						"pl7.app/table/visibility": "optional"
+					}
+				}
+			},
+			{
+				"column": "pvalue",
+				"id": "pvalue",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/pvalue",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "P-value",
+						"pl7.app/table/orderPriority": "25",
+						"pl7.app/table/visibility": "optional",
+						"pl7.app/format": ".2e"
+					}
+				}
+			},
+			{
+				"column": "qvalue",
+				"id": "qvalue",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/qvalue",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "Q-value",
+						"pl7.app/table/orderPriority": "25",
+						"pl7.app/table/visibility": "optional",
+						"pl7.app/format": ".2e"
+					}
+				}
+			},
+			{
+				"column": "geneID",
+				"id": "geneID",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/geneID",
+					"valueType": "String",
+					"annotations": {
+						"pl7.app/label": "Gene IDs",
+						"pl7.app/table/orderPriority": "20",
+						"pl7.app/table/visibility": "optional"
+					}
+				}
+			},
+			{
+				"column": "Count",
+				"id": "Count",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/Count",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "Gene count",
+						"pl7.app/table/orderPriority": "20",
+						"pl7.app/table/visibility": "optional",
+						"pl7.app/format": ".0f"
+					}
+				}
+			},
+			{
+				"column": "RichFactor",
+				"id": "RichFactor",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/RichFactor",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "Rich factor",
+						"pl7.app/table/orderPriority": "15",
+						"pl7.app/table/visibility": "optional",
+						"pl7.app/format": ".3f"
+					}
+				}
+			},
+			{
+				"column": "FoldEnrichment",
+				"id": "FoldEnrichment",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/FoldEnrichment",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "Fold enrichment",
+						"pl7.app/table/orderPriority": "15",
+						"pl7.app/table/visibility": "optional",
+						"pl7.app/format": ".2f"
 					}
 				}
 			}
