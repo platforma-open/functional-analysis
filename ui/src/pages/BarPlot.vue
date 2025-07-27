@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { GraphMakerProps } from '@milaboratories/graph-maker';
+import type { PredefinedGraphOption } from '@milaboratories/graph-maker';
 import { GraphMaker } from '@milaboratories/graph-maker';
 import '@milaboratories/graph-maker/styles';
 import { useApp } from '../app';
@@ -18,7 +18,7 @@ function getDefaultOptions(ORATop10Pcols?: PColumnIdAndSpec[]) {
     return pcols.findIndex((p) => p.spec.name === name);
   }
 
-  const defaults: GraphMakerProps['defaultOptions'] = [
+  const defaults: PredefinedGraphOption<'discrete'>[] = [
     {
       inputName: 'y',
       selectedSource: ORATop10Pcols[getIndex('pl7.app/rna-seq/minlog10padj',
