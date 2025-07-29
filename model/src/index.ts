@@ -22,7 +22,6 @@ export type BlockArgs = {
   geneListRef?: PlRef;
   pathwayCollection?: string;
   geneSubset: string[];
-  contrast?: string;
 };
 
 export const model = BlockModel.create()
@@ -67,30 +66,6 @@ export const model = BlockModel.create()
       && spec.name === 'pl7.app/rna-seq/regulationDirection',
     { includeNativeLabel: true, addLabelAsSuffix: true }),
   )
-
-  .output('contrastOptions', (ctx) => {
-    if (!ctx.args.geneListRef) return undefined;
-
-    // Get the contrastExport p-column from the result pool
-    const contrastExport = ctx.resultPool.getData()
-      .entries
-      .map((entry) => entry.obj)
-      .find((col) =>
-        isPColumnSpec(col.spec)
-        && col.spec.name === 'pl7.app/label'
-        && col.spec.annotations?.['pl7.app/isLabel'] === 'true'
-        && col.spec.axesSpec?.[0]?.name === 'pl7.app/rna-seq/contrastGroup',
-      );
-
-    if (contrastExport) {
-      // Get the contrast values from the p-column data
-      const contrastData = contrastExport.data?.getDataAsJson<Record<string, string>>();
-      if (contrastData?.data) {
-        return [...new Set(Object.values(contrastData.data))];
-      }
-    }
-    return undefined;
-  })
 
   .output('ORApt', (ctx) => {
     const pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
