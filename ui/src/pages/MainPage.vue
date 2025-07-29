@@ -10,26 +10,20 @@ import {
   PlSlideModal,
   usePlDataTableSettingsV2,
 } from '@platforma-sdk/ui-vue';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useApp } from '../app';
 
 const app = useApp();
 
 const tableSettings = usePlDataTableSettingsV2({
   model: () => app.model.outputs.ORApt,
+  sheets: () => app.model.outputs.ORAsheets,
 });
 
 const settingsAreShown = ref(app.model.outputs.ORApt === undefined);
 const showSettings = () => {
   settingsAreShown.value = true;
 };
-
-const contrastOptions = computed(() => {
-  return app.model.outputs.contrastOptions?.map((v) => ({
-    value: v,
-    label: v,
-  }));
-});
 
 const pathwayCollectionOptions = [
   { label: 'Gene Ontology (GO)', value: 'GO' },
@@ -65,11 +59,6 @@ const geneSubsetOptions = [
         v-model="app.model.args.geneListRef" :options="app.model.outputs.geneListOptions"
         label="Select gene list"
       />
-      <PlDropdown v-model="app.model.args.contrast" :options="contrastOptions" label="Contrast" >
-        <template #tooltip>
-          Select contrast of interest for functional analysis
-        </template>
-      </PlDropdown>
       <PlDropdown v-model="app.model.args.pathwayCollection" :options="pathwayCollectionOptions" label="Select pathway collection" />
       <!-- Option buttons to choose how to do GO analysis -->
       <PlCheckboxGroup v-model="app.model.args.geneSubset" label="Select gene subsets" :options="geneSubsetOptions" >
@@ -80,6 +69,6 @@ const geneSubsetOptions = [
       </PlCheckboxGroup>
     </PlSlideModal>
 
-    <PlAgDataTableV2 v-if="app.model.ui" v-model="app.model.ui.tableState" :settings="tableSettings" />
+    <PlAgDataTableV2 v-if="app.model.ui" v-model="app.model.ui.tableState" :settings="tableSettings" show-export-button show-columns-panel />
   </PlBlockPage>
 </template>

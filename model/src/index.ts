@@ -9,7 +9,10 @@ import type {
 import {
   BlockModel,
   createPFrameForGraphs,
+  createPlDataTableSheet,
+  createPlDataTableStateV2,
   createPlDataTableV2,
+  getUniquePartitionKeys,
   isPColumnSpec,
 } from '@platforma-sdk/model';
 
@@ -22,7 +25,6 @@ export type BlockArgs = {
   geneListRef?: PlRef;
   pathwayCollection?: string;
   geneSubset: string[];
-  contrast?: string;
 };
 
 export const model = BlockModel.create()
@@ -33,19 +35,25 @@ export const model = BlockModel.create()
   })
 
   .withUiState<UiState>({
-    tableState: {
-      gridState: {},
-      pTableParams: {
-        sorting: [],
-        filters: [],
-      },
-    },
+    tableState: createPlDataTableStateV2(),
     graphState: {
       title: 'Top 10 enriched pathways',
       template: 'bar',
       axesSettings: {
+        axisX: {
+          // These angles do not seems to work currently when (reverse axis) is reverse: true
+          axisLabelsAngle: 0,
+          // Need to hide this axis title for proper alignment of plots for now
+          titleMode: 'hidden',
+        },
+        axisY: {
+          axisLabelsAngle: 0,
+        },
+        legend: {},
         other: {
           reverse: true,
+          facetColumns: 1,
+          facetSharedBy: 'y',
         },
       } as Partial<GraphMakerState['axesSettings']>,
     },
@@ -68,30 +76,6 @@ export const model = BlockModel.create()
     { includeNativeLabel: true, addLabelAsSuffix: true }),
   )
 
-  .output('contrastOptions', (ctx) => {
-    if (!ctx.args.geneListRef) return undefined;
-
-    // Get the contrastExport p-column from the result pool
-    const contrastExport = ctx.resultPool.getData()
-      .entries
-      .map((entry) => entry.obj)
-      .find((col) =>
-        isPColumnSpec(col.spec)
-        && col.spec.name === 'pl7.app/label'
-        && col.spec.annotations?.['pl7.app/isLabel'] === 'true'
-        && col.spec.axesSpec?.[0]?.name === 'pl7.app/rna-seq/contrastGroup',
-      );
-
-    if (contrastExport) {
-      // Get the contrast values from the p-column data
-      const contrastData = contrastExport.data?.getDataAsJson<Record<string, string>>();
-      if (contrastData?.data) {
-        return [...new Set(Object.values(contrastData.data))];
-      }
-    }
-    return undefined;
-  })
-
   .output('ORApt', (ctx) => {
     const pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
     if (pCols === undefined) {
@@ -99,6 +83,30 @@ export const model = BlockModel.create()
     }
 
     return createPlDataTableV2(ctx, pCols, ctx.uiState?.tableState);
+  })
+
+  .output('ORAsheets', (ctx) => {
+    const pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
+    if (pCols === undefined) {
+      return undefined;
+    }
+
+    // Create sheets based on first axis (either contrast or cluster)
+    // This first axis seems to be partitioned by default
+    // notice it is not included in ORAresImportParams, which has partitionKeyLength: 0
+    const anchor = pCols[0];
+    if (!anchor) return undefined;
+
+    const r = getUniquePartitionKeys(anchor.data);
+    if (!r) return undefined;
+
+    const firstAxisValues = r[0];
+    if (!firstAxisValues) return undefined;
+
+    const firstAxisSpec = anchor.spec.axesSpec[0];
+    if (!firstAxisSpec) return undefined;
+
+    return [createPlDataTableSheet(ctx, firstAxisSpec, firstAxisValues)];
   })
 
   .output('ORATop10Pf', (ctx): PFrameHandle | undefined => {

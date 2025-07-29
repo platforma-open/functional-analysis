@@ -15,7 +15,8 @@ getColumns := func(species, pathwayCollection) {
 					},
 					"annotations": {
 						"pl7.app/label": "Pathway ID",
-						"pl7.app/table/orderPriority": "100"
+						"pl7.app/table/orderPriority": "100",
+						"pl7.app/table/visibility": "default"
 					}
 			}
 			},
@@ -29,7 +30,8 @@ getColumns := func(species, pathwayCollection) {
 					},
 					"annotations": {
 						"pl7.app/label": "DEG subset",
-						"pl7.app/table/orderPriority": "90"
+						"pl7.app/table/orderPriority": "90",
+						"pl7.app/table/visibility": "default"
 					}
 				}
 			}
@@ -44,7 +46,8 @@ getColumns := func(species, pathwayCollection) {
 					"valueType": "String",
 					"annotations": {
 						"pl7.app/label": "Description",
-						"pl7.app/table/orderPriority": "70"
+						"pl7.app/table/orderPriority": "70",
+						"pl7.app/table/visibility": "default"
 					}
 				}
 			},
@@ -57,7 +60,9 @@ getColumns := func(species, pathwayCollection) {
 					"valueType": "Double",
 					"annotations": {
 						"pl7.app/label": "Z score",
-						"pl7.app/table/orderPriority": "60"
+						"pl7.app/table/orderPriority": "60",
+						"pl7.app/table/visibility": "optional",
+						"pl7.app/format": ".2f"
 					}
 				}
 			},
@@ -70,7 +75,9 @@ getColumns := func(species, pathwayCollection) {
 					"valueType": "Double",
 					"annotations": {
 						"pl7.app/label": "Adjusted p-value",
-						"pl7.app/table/orderPriority": "50"
+						"pl7.app/table/orderPriority": "50",
+						"pl7.app/table/visibility": "default",
+						"pl7.app/format": ".2e"
 					}
 				}
 			},
@@ -83,7 +90,9 @@ getColumns := func(species, pathwayCollection) {
 					"valueType": "Double",
 					"annotations": {
 						"pl7.app/label": "-log10 adjusted p-value",
-						"pl7.app/table/orderPriority": "40"
+						"pl7.app/table/orderPriority": "40",
+						"pl7.app/table/visibility": "optional",
+						"pl7.app/format": ".2f"
 					}
 				}
 			},
@@ -96,7 +105,9 @@ getColumns := func(species, pathwayCollection) {
 					"valueType": "Double",
 					"annotations": {
 						"pl7.app/label": "Gene percent",
-						"pl7.app/table/orderPriority": "30"
+						"pl7.app/table/orderPriority": "30",
+						"pl7.app/table/visibility": "optional",
+						"pl7.app/format": ".2f"
 					}
 				}
 			},
@@ -109,7 +120,8 @@ getColumns := func(species, pathwayCollection) {
 					"valueType": "String",
 					"annotations": {
 						"pl7.app/label": "Gene ratio",
-						"pl7.app/table/orderPriority": "30"
+						"pl7.app/table/orderPriority": "30",
+						"pl7.app/table/visibility": "default"
 					}
 				}
 			},
@@ -122,7 +134,97 @@ getColumns := func(species, pathwayCollection) {
 					"valueType": "String",
 					"annotations": {
 						"pl7.app/label": "Background ratio",
-						"pl7.app/table/orderPriority": "30"
+						"pl7.app/table/orderPriority": "30",
+						"pl7.app/table/visibility": "optional"
+					}
+				}
+			},
+			{
+				"column": "pvalue",
+				"id": "pvalue",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/pvalue",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "P-value",
+						"pl7.app/table/orderPriority": "25",
+						"pl7.app/table/visibility": "optional",
+						"pl7.app/format": ".2e"
+					}
+				}
+			},
+			{
+				"column": "qvalue",
+				"id": "qvalue",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/qvalue",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "Q-value",
+						"pl7.app/table/orderPriority": "25",
+						"pl7.app/table/visibility": "optional",
+						"pl7.app/format": ".2e"
+					}
+				}
+			},
+			{
+				"column": "geneID",
+				"id": "geneID",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/geneID",
+					"valueType": "String",
+					"annotations": {
+						"pl7.app/label": "Gene IDs",
+						"pl7.app/table/orderPriority": "20",
+						"pl7.app/table/visibility": "optional"
+					}
+				}
+			},
+			{
+				"column": "Count",
+				"id": "Count",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/Count",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "Gene count",
+						"pl7.app/table/orderPriority": "20",
+						"pl7.app/table/visibility": "optional",
+						"pl7.app/format": ".0f"
+					}
+				}
+			},
+			{
+				"column": "RichFactor",
+				"id": "RichFactor",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/RichFactor",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "Rich factor",
+						"pl7.app/table/orderPriority": "15",
+						"pl7.app/table/visibility": "optional",
+						"pl7.app/format": ".3f"
+					}
+				}
+			},
+			{
+				"column": "FoldEnrichment",
+				"id": "FoldEnrichment",
+				"allowNA": true,
+				"spec": {
+					"name": "pl7.app/rna-seq/FoldEnrichment",
+					"valueType": "Double",
+					"annotations": {
+						"pl7.app/label": "Fold enrichment",
+						"pl7.app/table/orderPriority": "15",
+						"pl7.app/table/visibility": "optional",
+						"pl7.app/format": ".2f"
 					}
 				}
 			}
@@ -143,7 +245,8 @@ getColumns := func(species, pathwayCollection) {
 					"valueType": "String",
 					"annotations": {
 						"pl7.app/label": "Ontology",
-						"pl7.app/table/orderPriority": "80"
+						"pl7.app/table/orderPriority": "80",
+						"pl7.app/table/visibility": "optional"
 					}
 				}
 			}]

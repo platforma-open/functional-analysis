@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { GraphMakerProps } from '@milaboratories/graph-maker';
+import type { PredefinedGraphOption } from '@milaboratories/graph-maker';
 import { GraphMaker } from '@milaboratories/graph-maker';
 import '@milaboratories/graph-maker/styles';
 import { useApp } from '../app';
@@ -18,7 +18,7 @@ function getDefaultOptions(ORATop10Pcols?: PColumnIdAndSpec[]) {
     return pcols.findIndex((p) => p.spec.name === name);
   }
 
-  const defaults: GraphMakerProps['defaultOptions'] = [
+  const defaults: PredefinedGraphOption<'discrete'>[] = [
     {
       inputName: 'y',
       selectedSource: ORATop10Pcols[getIndex('pl7.app/rna-seq/minlog10padj',
@@ -35,9 +35,9 @@ function getDefaultOptions(ORATop10Pcols?: PColumnIdAndSpec[]) {
       selectedSource: ORATop10Pcols[getIndex('pl7.app/rna-seq/pathwayname',
         ORATop10Pcols)].spec.axesSpec[2],
     },
-    // Add grouping factor in filters (cluster or comparison)
+    // Add grouping factor in facetBy (cluster or comparison)
     {
-      inputName: 'filters',
+      inputName: 'facetBy',
       selectedSource: ORATop10Pcols[getIndex('pl7.app/rna-seq/pathwayname',
         ORATop10Pcols)].spec.axesSpec[0],
     },

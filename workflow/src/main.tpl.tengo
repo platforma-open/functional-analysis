@@ -26,7 +26,7 @@ wf.body(func(args) {
 	species := inputSpec.axesSpec[1].domain["pl7.app/species"]
 	pathwayCollection := args.pathwayCollection
 
-	ORAResImportParams := ORAResPfconvParamsLib.getColumns(inputSpec, pathwayCollection)
+	ORAResImportParams := ORAResPfconvParamsLib.getColumns(species, pathwayCollection)
 
 	targetOutputs := [
 	{
