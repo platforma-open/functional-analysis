@@ -17,6 +17,7 @@ const app = useApp();
 
 const tableSettings = usePlDataTableSettingsV2({
   model: () => app.model.outputs.ORApt,
+  sheets: () => app.model.outputs.ORAsheets,
 });
 
 const settingsAreShown = ref(app.model.outputs.ORApt === undefined);

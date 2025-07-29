@@ -9,7 +9,10 @@ import type {
 import {
   BlockModel,
   createPFrameForGraphs,
+  createPlDataTableSheet,
+  createPlDataTableStateV2,
   createPlDataTableV2,
+  getUniquePartitionKeys,
   isPColumnSpec,
 } from '@platforma-sdk/model';
 
@@ -68,6 +71,30 @@ export const model = BlockModel.create()
     }
 
     return createPlDataTableV2(ctx, pCols, ctx.uiState?.tableState);
+  })
+
+  .output('ORAsheets', (ctx) => {
+    const pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
+    if (pCols === undefined) {
+      return undefined;
+    }
+
+    // Create sheets based on first axis (either contrast or cluster)
+    // This first axis seems to be partitioned by default
+    // notice it is not included in ORAresImportParams, which has partitionKeyLength: 0
+    const anchor = pCols[0];
+    if (!anchor) return undefined;
+
+    const r = getUniquePartitionKeys(anchor.data);
+    if (!r) return undefined;
+
+    const firstAxisValues = r[0];
+    if (!firstAxisValues) return undefined;
+
+    const firstAxisSpec = anchor.spec.axesSpec[0];
+    if (!firstAxisSpec) return undefined;
+
+    return [createPlDataTableSheet(ctx, firstAxisSpec, firstAxisValues)];
   })
 
   .output('ORATop10Pf', (ctx): PFrameHandle | undefined => {
