@@ -35,9 +35,9 @@ function getDefaultOptions(ORATop10Pcols?: PColumnIdAndSpec[]) {
       selectedSource: ORATop10Pcols[getIndex('pl7.app/rna-seq/pathwayname',
         ORATop10Pcols)].spec.axesSpec[2],
     },
-    // Add grouping factor in filters (cluster or comparison)
+    // Add grouping factor in facetBy (cluster or comparison)
     {
-      inputName: 'filters',
+      inputName: 'facetBy',
       selectedSource: ORATop10Pcols[getIndex('pl7.app/rna-seq/pathwayname',
         ORATop10Pcols)].spec.axesSpec[0],
     },

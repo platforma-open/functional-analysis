@@ -40,8 +40,20 @@ export const model = BlockModel.create()
       title: 'Top 10 enriched pathways',
       template: 'bar',
       axesSettings: {
+        axisX: {
+          // These angles do not seems to work currently when (reverse axis) is reverse: true
+          axisLabelsAngle: 0,
+          // Need to hide this axis title for proper alignment of plots for now
+          titleMode: 'hidden',
+        },
+        axisY: {
+          axisLabelsAngle: 0,
+        },
+        legend: {},
         other: {
           reverse: true,
+          facetColumns: 1,
+          facetSharedBy: 'y',
         },
       } as Partial<GraphMakerState['axesSettings']>,
     },
