@@ -32,13 +32,7 @@ export const model = BlockModel.create()
   })
 
   .withUiState<UiState>({
-    tableState: {
-      gridState: {},
-      pTableParams: {
-        sorting: [],
-        filters: [],
-      },
-    },
+    tableState: createPlDataTableStateV2(),
     graphState: {
       title: 'Top 10 enriched pathways',
       template: 'bar',

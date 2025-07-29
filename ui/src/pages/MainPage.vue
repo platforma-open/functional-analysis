@@ -68,6 +68,6 @@ const geneSubsetOptions = [
       </PlCheckboxGroup>
     </PlSlideModal>
 
-    <PlAgDataTableV2 v-if="app.model.ui" v-model="app.model.ui.tableState" :settings="tableSettings" />
+    <PlAgDataTableV2 v-if="app.model.ui" v-model="app.model.ui.tableState" :settings="tableSettings" show-export-button show-columns-panel />
   </PlBlockPage>
 </template>

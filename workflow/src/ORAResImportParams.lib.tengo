@@ -31,7 +31,7 @@ getColumns := func(species, pathwayCollection) {
 					"annotations": {
 						"pl7.app/label": "DEG subset",
 						"pl7.app/table/orderPriority": "90",
-						"pl7.app/table/visibility": "optional"
+						"pl7.app/table/visibility": "default"
 					}
 				}
 			}
