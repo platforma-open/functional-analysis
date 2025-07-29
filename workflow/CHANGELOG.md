@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.workflow
 
+## 2.1.1
+
+### Patch Changes
+
+- c1082ad: chore: update deps
+
 ## 2.1.0
 
 ### Minor Changes
