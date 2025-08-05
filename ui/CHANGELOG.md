@@ -1,5 +1,16 @@
 # @platforma-open/milaboratories.functional-analysis.ui
 
+## 2.3.0
+
+### Minor Changes
+
+- 9692a00: Make block work with cluster-markers block, SDK update, improve table and plots presentation
+
+### Patch Changes
+
+- Updated dependencies [9692a00]
+  - @platforma-open/milaboratories.functional-analysis.model@2.4.0
+
 ## 2.2.1
 
 ### Patch Changes

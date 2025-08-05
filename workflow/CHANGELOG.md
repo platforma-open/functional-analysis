@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.workflow
 
+## 2.2.0
+
+### Minor Changes
+
+- 9692a00: Make block work with cluster-markers block, SDK update, improve table and plots presentation
+
 ## 2.1.1
 
 ### Patch Changes
