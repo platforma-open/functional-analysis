@@ -1,0 +1,51 @@
+ll := import("@platforma-sdk/workflow-tengo:ll")
+ORAResPfconvParamsLib := import(":ORAResImportParams")
+
+getTargetOutputs := func(species, pathwayCollection, blockId) {
+	return [ 
+	{
+		type: "Resource",
+		spec: {
+			kind: "PColumn",
+			name: "pl7.app/rna-seq/allEnrichment",
+			domain: {
+				"pl7.app/blockId": blockId
+			},
+			valueType: "File"
+		},
+		name: "allEnrichment",
+		path: ["allEnrichmentCsv"]
+	}, 
+	{
+		type: "Resource",
+		spec: {
+			kind: "PColumn",
+			name: "pl7.app/rna-seq/topEnrichment",
+			domain: {
+				"pl7.app/blockId": blockId
+			},
+			valueType: "File"
+		},
+		name: "topEnrichment",
+		path: ["topEnrichmentCsv"]
+	} 
+	// {
+	// 	type: "Xsv",
+	// 	xsvType: "csv",
+	// 	settings: ORAResPfconvParamsLib.getColumns(species, pathwayCollection),
+	// 	name: "allEnrichment",
+	// 	path: ["allEnrichmentCsv"]
+	// },
+	// {
+	// 	type: "Xsv",
+	// 	xsvType: "csv",
+	// 	settings: ORAResPfconvParamsLib.getColumns(species, pathwayCollection),
+	// 	name: "topEnrichment",
+	// 	path: ["topEnrichmentCsv"]
+	// }
+	]
+}
+
+export ll.toStrict({
+	getTargetOutputs: getTargetOutputs
+})

@@ -3,23 +3,26 @@ import type {
   InferOutputsType,
   PColumnIdAndSpec,
   PFrameHandle,
-  PlDataTableState,
-  PlRef } from '@platforma-sdk/model';
+  PlDataTableStateV2,
+  PlRef,
+} from '@platforma-sdk/model';
 import {
   BlockModel,
   createPFrameForGraphs,
-  createPlDataTable,
+  createPlDataTableSheet,
+  createPlDataTableStateV2,
+  createPlDataTableV2,
+  getUniquePartitionKeys,
   isPColumnSpec,
 } from '@platforma-sdk/model';
 
 export type UiState = {
-  tableState: PlDataTableState;
+  tableState: PlDataTableStateV2;
   graphState: GraphMakerState;
-  contrast?: string;
 };
 
 export type BlockArgs = {
-  geneListRef?: PlRef[];
+  geneListRef?: PlRef;
   pathwayCollection?: string;
   geneSubset: string[];
 };
@@ -32,19 +35,25 @@ export const model = BlockModel.create()
   })
 
   .withUiState<UiState>({
-    tableState: {
-      gridState: {},
-      pTableParams: {
-        sorting: [],
-        filters: [],
-      },
-    },
+    tableState: createPlDataTableStateV2(),
     graphState: {
       title: 'Top 10 enriched pathways',
       template: 'bar',
       axesSettings: {
+        axisX: {
+          // These angles do not seems to work currently when (reverse axis) is reverse: true
+          axisLabelsAngle: 0,
+          // Need to hide this axis title for proper alignment of plots for now
+          titleMode: 'hidden',
+        },
+        axisY: {
+          axisLabelsAngle: 0,
+        },
+        legend: {},
         other: {
           reverse: true,
+          facetColumns: 1,
+          facetSharedBy: 'y',
         },
       } as Partial<GraphMakerState['axesSettings']>,
     },
@@ -52,8 +61,8 @@ export const model = BlockModel.create()
 
   // Activate "Run" button only after these conditions are satisfied
   .argsValid((ctx) => (
-    (ctx.args.geneListRef !== undefined) && (ctx.args.geneListRef.length !== 0))
-  && ((ctx.args.geneSubset !== undefined) && (ctx.args.geneSubset.length !== 0)),
+    (ctx.args.geneListRef !== undefined))
+  && ((ctx.args.geneSubset !== undefined)),
   )
 
   // User can only select as input regulationDirection lists
@@ -67,38 +76,37 @@ export const model = BlockModel.create()
     { includeNativeLabel: true, addLabelAsSuffix: true }),
   )
 
-  .output('contrastList', (ctx): string[] | undefined => {
-    // Make sure input contrast results have been selected
-    if (!ctx.args.geneListRef) return undefined;
-
-    // Get the specs of the selected p-columns and extract contrast info
-    const contrasts: string[] = [];
-    for (const gRef of ctx.args.geneListRef) {
-      const anchorSpec = ctx.resultPool.getSpecByRef(gRef);
-      if (anchorSpec?.annotations !== undefined) {
-        contrasts.push(anchorSpec.annotations['pl7.app/label']);
-      }
-    }
-    return contrasts;
-  })
-
-// .output('datasetSpec', (ctx) => {
-//   if (ctx.args.geneListRef) return ctx.resultPool.getSpecByRef(ctx.args.geneListRef);
-//   else return undefined;
-// })
-
   .output('ORApt', (ctx) => {
-    let pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
+    const pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
 
-    // Filter by selected contrast
-    pCols = pCols.filter(
-      (col) => (col.spec.annotations?.['pl7.app/contrast'] === ctx.uiState.contrast),
-    );
+    return createPlDataTableV2(ctx, pCols, ctx.uiState?.tableState);
+  })
 
-    return createPlDataTable(ctx, pCols, ctx.uiState?.tableState);
+  .output('ORAsheets', (ctx) => {
+    const pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
+    if (pCols === undefined) {
+      return undefined;
+    }
+
+    // Create sheets based on first axis (either contrast or cluster)
+    // This first axis seems to be partitioned by default
+    // notice it is not included in ORAresImportParams, which has partitionKeyLength: 0
+    const anchor = pCols[0];
+    if (!anchor) return undefined;
+
+    const r = getUniquePartitionKeys(anchor.data);
+    if (!r) return undefined;
+
+    const firstAxisValues = r[0];
+    if (!firstAxisValues) return undefined;
+
+    const firstAxisSpec = anchor.spec.axesSpec[0];
+    if (!firstAxisSpec) return undefined;
+
+    return [createPlDataTableSheet(ctx, firstAxisSpec, firstAxisValues)];
   })
 
   .output('ORATop10Pf', (ctx): PFrameHandle | undefined => {
@@ -111,9 +119,7 @@ export const model = BlockModel.create()
       (col) => (
         // Filter out Gene/Background Ratio pColumns
         col.spec.name !== 'pl7.app/rna-seq/BgRatio')
-      && (col.spec.name !== 'pl7.app/rna-seq/GeneRatio')
-      // Filter by selected contrast
-      && (col.spec.annotations?.['pl7.app/contrast'] === ctx.uiState.contrast),
+      && (col.spec.name !== 'pl7.app/rna-seq/GeneRatio'),
     );
 
     return createPFrameForGraphs(ctx, pCols);
@@ -121,15 +127,10 @@ export const model = BlockModel.create()
 
   // Return PColumnIdAndSpec needed for default plot parameters
   .output('ORATop10Pcols', (ctx) => {
-    let pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
+    const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
-
-    // Filter by selected contrast
-    pCols = pCols.filter(
-      (col) => (col.spec.annotations?.['pl7.app/contrast'] === ctx.uiState.contrast),
-    );
 
     return pCols.map(
       (c) =>
