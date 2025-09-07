@@ -23,6 +23,7 @@ export type UiState = {
 
 export type BlockArgs = {
   geneListRef?: PlRef;
+  title?: string;
   pathwayCollection?: string;
   geneSubset: string[];
 };
@@ -73,7 +74,7 @@ export const model = BlockModel.create()
   .output('geneListOptions', (ctx) =>
     ctx.resultPool.getOptions((spec) => isPColumnSpec(spec)
       && spec.name === 'pl7.app/rna-seq/regulationDirection',
-    { includeNativeLabel: true, addLabelAsSuffix: true }),
+    { includeNativeLabel: false, addLabelAsSuffix: true }),
   )
 
   .output('ORApt', (ctx) => {
@@ -140,6 +141,12 @@ export const model = BlockModel.create()
         } satisfies PColumnIdAndSpec),
     );
   })
+
+  .title((ctx) =>
+    ctx.args.title
+      ? `Functional Analysis - ${ctx.args.title}`
+      : 'Functional Analysis',
+  )
 
   .sections([
     { type: 'link', href: '/', label: 'Table' },
