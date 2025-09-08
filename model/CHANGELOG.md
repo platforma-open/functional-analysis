@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.model
 
+## 2.4.1
+
+### Patch Changes
+
+- 1dcc1e4: Added dynamic block title
+
 ## 2.4.0
 
 ### Minor Changes

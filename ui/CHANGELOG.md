@@ -1,5 +1,13 @@
 # @platforma-open/milaboratories.functional-analysis.ui
 
+## 2.3.1
+
+### Patch Changes
+
+- 1dcc1e4: Added dynamic block title
+- Updated dependencies [1dcc1e4]
+  - @platforma-open/milaboratories.functional-analysis.model@2.4.1
+
 ## 2.3.0
 
 ### Minor Changes
