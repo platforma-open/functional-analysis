@@ -10,6 +10,8 @@ import {
   PlSlideModal,
   usePlDataTableSettingsV2,
 } from '@platforma-sdk/ui-vue';
+import type { PlRef } from '@platforma-sdk/model';
+import { plRefsEqual } from '@platforma-sdk/model';
 import { ref } from 'vue';
 import { useApp } from '../app';
 
@@ -24,6 +26,13 @@ const settingsAreShown = ref(app.model.outputs.ORApt === undefined);
 const showSettings = () => {
   settingsAreShown.value = true;
 };
+
+function setInput(inputRef?: PlRef) {
+  if (inputRef)
+    app.model.args.title = app.model.outputs.geneListOptions?.find((o) => plRefsEqual(o.ref, inputRef))?.label;
+  else
+    app.model.args.title = undefined;
+}
 
 const pathwayCollectionOptions = [
   { label: 'Gene Ontology (GO)', value: 'GO' },
@@ -58,6 +67,7 @@ const geneSubsetOptions = [
       <PlDropdownRef
         v-model="app.model.args.geneListRef" :options="app.model.outputs.geneListOptions"
         label="Select gene list"
+        @update:model-value="setInput"
       />
       <PlDropdown v-model="app.model.args.pathwayCollection" :options="pathwayCollectionOptions" label="Select pathway collection" />
       <!-- Option buttons to choose how to do GO analysis -->
