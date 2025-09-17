@@ -1,5 +1,12 @@
 # @platforma-open/milaboratories.functional-analysis.ui
 
+## 2.3.2
+
+### Patch Changes
+
+- Updated dependencies [5505b06]
+  - @platforma-open/milaboratories.functional-analysis.model@2.4.2
+
 ## 2.3.1
 
 ### Patch Changes

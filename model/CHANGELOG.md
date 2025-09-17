@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.model
 
+## 2.4.2
+
+### Patch Changes
+
+- 5505b06: Full SDK update
+
 ## 2.4.1
 
 ### Patch Changes
