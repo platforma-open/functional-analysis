@@ -153,6 +153,6 @@ export const model = BlockModel.create()
     { type: 'link', href: '/graph', label: 'Bar plot' },
   ])
 
-  .done();
+  .done(2);
 
 export type BlockOutputs = InferOutputsType<typeof model>;
