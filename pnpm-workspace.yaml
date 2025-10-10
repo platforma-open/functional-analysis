@@ -17,7 +17,7 @@ catalog:
   '@milaboratories/software-pframes-conv': ^2.2.7
 
   '@platforma-open/milaboratories.runenv-r-functional-analysis': ^1.0.6
-  '@platforma-sdk/package-builder': ^3.5.2
+  '@platforma-sdk/package-builder': ^3.8.0
   '@platforma-sdk/eslint-config': ^1.1.0
   '@platforma-sdk/blocks-deps-updater': ^2.0.0
 
