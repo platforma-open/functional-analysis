@@ -1,5 +1,21 @@
 ## 1.0.0
 
+## 1.2.7
+
+### Patch Changes
+
+- 3a93570: technical release
+- 5046183: technical release
+- 1019512: technical release
+- 5a0b864: technical release
+- Updated dependencies [3a93570]
+- Updated dependencies [5046183]
+- Updated dependencies [1019512]
+- Updated dependencies [5a0b864]
+  - @platforma-open/milaboratories.functional-analysis.model@2.4.3
+  - @platforma-open/milaboratories.functional-analysis.ui@2.3.3
+  - @platforma-open/milaboratories.functional-analysis.workflow@2.2.2
+
 ## 1.2.6
 
 ### Patch Changes

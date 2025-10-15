@@ -1,5 +1,14 @@
 # @platforma-open/milaboratories.functional-analysis.software
 
+## 2.3.2
+
+### Patch Changes
+
+- 3a93570: technical release
+- 5046183: technical release
+- 1019512: technical release
+- 5a0b864: technical release
+
 ## 2.3.1
 
 ### Patch Changes
