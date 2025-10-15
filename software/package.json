@@ -22,6 +22,16 @@
             "Rscript",
             "{pkg}/over_representation_analysis.R"
           ]
+        },
+        "docker": {
+          "artifact": {
+            "type": "docker",
+            "context": "./src/over-representation-analysis",
+            "dockerfile": "Dockerfile"
+          },
+          "cmd": [
+            "/app/over_representation_analysis.R"
+          ]
         }
       }
     }
