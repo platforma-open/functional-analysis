@@ -229,7 +229,7 @@ getColumns := func(species, pathwayCollection) {
 				}
 			}
 			],
-		"storageFormat": "Binary",
+		"storageFormat": "Parquet",
 		"partitionKeyLength": 0
 	}
 
