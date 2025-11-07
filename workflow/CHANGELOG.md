@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.workflow
 
+## 2.2.3
+
+### Patch Changes
+
+- d610ee6: Support parquet format (update SDK)
+
 ## 2.2.2
 
 ### Patch Changes
