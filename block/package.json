@@ -26,9 +26,8 @@
       "title": "Functional Analysis",
       "logo": "file:../logos/block-logo.png",
       "url": "https://github.com/platforma-open/functional-analysis",
-      "docs": "https://github.com/platforma-open/functional-analysis/docs",
       "support": "mailto:support@milaboratories.com",
-      "description": "Performs pathway enrichment on a set of genes (e.g., Differential Expression block output).",
+      "description": "Performs pathway enrichment analysis using clusterProfiler on Gene Ontology and Reactome databases to identify over-represented biological pathways in gene sets.",
       "longDescription": "file:../docs/description.md",
       "changelog": "file:./CHANGELOG.md",
       "tags": [
