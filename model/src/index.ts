@@ -54,7 +54,7 @@ export const model = BlockModel.create()
         other: {
           reverse: true,
           facetColumns: 1,
-          facetSharedBy: 'y',
+          facetSharedBy: 'none',
         },
       } as Partial<GraphMakerState['axesSettings']>,
     },
