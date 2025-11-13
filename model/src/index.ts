@@ -70,11 +70,16 @@ export const model = BlockModel.create()
   // includeNativeLabel ensures regulationDirection pl7.app/label
   // is also visible in selection (by default we only see Samples & data ID)
   // addLabelAsSuffix moves the native label to the end
+  // forceTraceElements ensures trace labels are always shown (e.g., cluster-markers or sc-differential-expression parameters)
   // Result: [dataID] / A vs B
   .output('geneListOptions', (ctx) =>
     ctx.resultPool.getOptions((spec) => isPColumnSpec(spec)
       && spec.name === 'pl7.app/rna-seq/regulationDirection',
-    { includeNativeLabel: false, addLabelAsSuffix: true }),
+    {
+      includeNativeLabel: false,
+      addLabelAsSuffix: false,
+      forceTraceElements: ['milaboratories.cluster-markers', 'milaboratories.sc-differential-expression'],
+    }),
   )
 
   .output('ORApt', (ctx) => {
