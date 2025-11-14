@@ -207,6 +207,18 @@ runORA <- function(trend_data, dir_label) {
     # Add -log10(p.adjust) column
     enriched_results <- as.data.frame(ora_results)
     enriched_results$`minlog10padj` <- -log10(enriched_results$p.adjust)
+    
+    # Substitute ontology abbreviations with full names
+    if (opt$pathway_collection == "GO" && "ONTOLOGY" %in% colnames(enriched_results)) {
+      ontology_map <- c("BP" = "Biological Process",
+                        "MF" = "Molecular Function",
+                        "CC" = "Cellular Component")
+      original_ontology <- enriched_results$ONTOLOGY
+      enriched_results$ONTOLOGY <- ontology_map[enriched_results$ONTOLOGY]
+      # Keep original value if not in map (shouldn't happen, but safe)
+      enriched_results$ONTOLOGY[is.na(enriched_results$ONTOLOGY)] <- 
+        original_ontology[is.na(enriched_results$ONTOLOGY)]
+    }
 
   # No input genes
   } else {
