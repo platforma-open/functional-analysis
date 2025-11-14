@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.model
 
+## 2.4.4
+
+### Patch Changes
+
+- b30e41b: Improved UI and updated metadata
+
 ## 2.4.3
 
 ### Patch Changes

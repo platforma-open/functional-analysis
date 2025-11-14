@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.software
 
+## 2.3.3
+
+### Patch Changes
+
+- b30e41b: Improved UI and updated metadata
+
 ## 2.3.2
 
 ### Patch Changes

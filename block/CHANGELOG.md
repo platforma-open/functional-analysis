@@ -1,5 +1,15 @@
 ## 1.0.0
 
+## 1.2.9
+
+### Patch Changes
+
+- b30e41b: Improved UI and updated metadata
+- Updated dependencies [b30e41b]
+  - @platforma-open/milaboratories.functional-analysis.workflow@2.2.4
+  - @platforma-open/milaboratories.functional-analysis.model@2.4.4
+  - @platforma-open/milaboratories.functional-analysis.ui@2.3.4
+
 ## 1.2.8
 
 ### Patch Changes
