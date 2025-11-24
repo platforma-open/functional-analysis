@@ -19,8 +19,8 @@ catalogs:
       specifier: ^1.0.6
       version: 1.0.6
     '@platforma-sdk/block-tools':
-      specifier: ^2.6.21
-      version: 2.6.21
+      specifier: ^2.6.22
+      version: 2.6.22
     '@platforma-sdk/blocks-deps-updater':
       specifier: ^2.0.0
       version: 2.0.0
@@ -43,8 +43,8 @@ catalogs:
       specifier: ^1.45.30
       version: 1.45.30
     '@platforma-sdk/workflow-tengo':
-      specifier: ^5.5.17
-      version: 5.5.17
+      specifier: ^5.6.1
+      version: 5.6.1
     '@vitejs/plugin-vue':
       specifier: ^5.2.1
       version: 5.2.1
@@ -98,7 +98,7 @@ importers:
     devDependencies:
       '@platforma-sdk/block-tools':
         specifier: 'catalog:'
-        version: 2.6.21
+        version: 2.6.22
 
   model:
     dependencies:
@@ -111,7 +111,7 @@ importers:
     devDependencies:
       '@platforma-sdk/block-tools':
         specifier: 'catalog:'
-        version: 2.6.21
+        version: 2.6.22
       '@platforma-sdk/eslint-config':
         specifier: 'catalog:'
         version: 1.1.0(@eslint/js@9.20.0)(@stylistic/eslint-plugin@2.13.0(eslint@9.20.1)(typescript@5.6.3))(eslint-plugin-n@17.15.1(eslint@9.20.1))(eslint-plugin-vue@9.32.0(eslint@9.20.1))(eslint@9.20.1)(globals@15.15.0)(typescript-eslint@8.24.1(eslint@9.20.1)(typescript@5.6.3))(typescript@5.6.3)
@@ -191,7 +191,7 @@ importers:
         version: link:../software
       '@platforma-sdk/workflow-tengo':
         specifier: 'catalog:'
-        version: 5.5.17
+        version: 5.6.1
     devDependencies:
       '@milaboratories/software-pframes-conv':
         specifier: 'catalog:'
@@ -1134,11 +1134,17 @@ packages:
   '@milaboratories/pl-model-common@1.21.6':
     resolution: {integrity: sha512-PU+LYdpz3bxmdVrZyjGDzxRNBgMn4FJC/D+vxZjNCp+LjxCgQkQ2K9tBy0xlkOVG6pCfAY8QhavZJciZJZZgrQ==}
 
+  '@milaboratories/pl-model-common@1.21.7':
+    resolution: {integrity: sha512-VMekzK2oGPN3e64w10zSgXzxYkMlKyoSSkXWf5AvaqaZvGnQariOFEl1TRJMzNaVKJn82FFrvyxgqJSEDsWsJQ==}
+
   '@milaboratories/pl-model-middle-layer@1.8.35':
     resolution: {integrity: sha512-fNYE4nWcmDn5CAK7IOwSR9htq10F7mPpfIunEcOHDXS1pSrPxc+QGiw6fJRWcV4KE8Qt55xfmmrl0zO/r2aCvg==}
 
   '@milaboratories/pl-model-middle-layer@1.8.40':
     resolution: {integrity: sha512-xwAhayvUYR1TmmIKtj/EOIc6TttvN18kXZcU0Ai/IfyjVqNw7GVPKywBLgD8Gt1yhg4Y8BTxilxpXTibRT3PCw==}
+
+  '@milaboratories/pl-model-middle-layer@1.8.41':
+    resolution: {integrity: sha512-Ky8OAuD1OdUiYuoe1zUrEVdrvPMRODt01mCufE+gBZYIA7MbBtkHAAjh9RUdInp49FzhvF11AKdOUqZU+Wtbcg==}
 
   '@milaboratories/pl-tree@1.8.14':
     resolution: {integrity: sha512-Xs8bXyCoKiaaiXUNSgjm6wj2ZiOXRjFNb2kMTNtA492qIJSTB3/SxPv56NSARoKiw0yohvmLccb+8GvzIHxQOg==}
@@ -1246,6 +1252,10 @@ packages:
     resolution: {integrity: sha512-X5B094uOZF8QiSNQg7FhjhWtwpAHTmYBsiwwOVhfo5e0yd0x6DBns82Jp0wWwXvocv7VQnS4mYWoXCy6NVzIvw==}
     hasBin: true
 
+  '@platforma-sdk/block-tools@2.6.22':
+    resolution: {integrity: sha512-/GR3mTsfZcTVX1lX2uPiOBe06FN78xmcRiViR164FCI2yt8pFAz88wpI9LyGiRJh/fM8dE2jHXn0V76PniAFMA==}
+    hasBin: true
+
   '@platforma-sdk/blocks-deps-updater@2.0.0':
     resolution: {integrity: sha512-cef5ysA011ub5bofbWQJ3EM9rZ7A4ixGMKhFIsF2VNwYrCu5XRHsayA6vDeFOBjX4Jnq9D0QztW0JUxXD73bpw==}
     hasBin: true
@@ -1282,6 +1292,9 @@ packages:
 
   '@platforma-sdk/workflow-tengo@5.5.17':
     resolution: {integrity: sha512-+fvJ6Z9Xkfe199jWm57+qHJGjCC8QuP6sVoF/8uyt5neVlrANsLT5jfSpgVj1yAIulgE9IxtqGrCHrvTbeocfg==}
+
+  '@platforma-sdk/workflow-tengo@5.6.1':
+    resolution: {integrity: sha512-p+4n4+RclR3lFRqurR0dhc5cHMFFtGLdutB8FFPU5pzpDXX+uKyG02Txe4e29WeDRwaIUnImNJQCULadDqERzA==}
 
   '@protobuf-ts/grpc-transport@2.11.1':
     resolution: {integrity: sha512-l6wrcFffY+tuNnuyrNCkRM8hDIsAZVLA8Mn7PKdVyYxITosYh60qW663p9kL6TWXYuDCL3oxH8ih3vLKTDyhtg==}
@@ -6586,7 +6599,7 @@ snapshots:
   '@eslint/config-array@0.19.2':
     dependencies:
       '@eslint/object-schema': 2.1.6
-      debug: 4.4.0(supports-color@8.1.1)
+      debug: 4.4.3
       minimatch: 3.1.2
     transitivePeerDependencies:
       - supports-color
@@ -6598,7 +6611,7 @@ snapshots:
   '@eslint/eslintrc@3.2.0':
     dependencies:
       ajv: 6.12.6
-      debug: 4.4.0(supports-color@8.1.1)
+      debug: 4.4.3
       espree: 10.3.0
       globals: 14.0.0
       ignore: 5.3.2
@@ -7006,6 +7019,12 @@ snapshots:
       canonicalize: 2.1.0
       zod: 3.23.8
 
+  '@milaboratories/pl-model-common@1.21.7':
+    dependencies:
+      '@milaboratories/pl-error-like': 1.12.5
+      canonicalize: 2.1.0
+      zod: 3.23.8
+
   '@milaboratories/pl-model-middle-layer@1.8.35':
     dependencies:
       '@milaboratories/pl-model-common': 1.21.4
@@ -7016,6 +7035,13 @@ snapshots:
   '@milaboratories/pl-model-middle-layer@1.8.40':
     dependencies:
       '@milaboratories/pl-model-common': 1.21.6
+      remeda: 2.31.1
+      utility-types: 3.11.0
+      zod: 3.23.8
+
+  '@milaboratories/pl-model-middle-layer@1.8.41':
+    dependencies:
+      '@milaboratories/pl-model-common': 1.21.7
       remeda: 2.31.1
       utility-types: 3.11.0
       zod: 3.23.8
@@ -7196,6 +7222,28 @@ snapshots:
       - aws-crt
       - supports-color
 
+  '@platforma-sdk/block-tools@2.6.22':
+    dependencies:
+      '@aws-sdk/client-s3': 3.859.0
+      '@milaboratories/pl-http': 1.2.0
+      '@milaboratories/pl-model-common': 1.21.7
+      '@milaboratories/pl-model-middle-layer': 1.8.41
+      '@milaboratories/resolve-helper': 1.1.1
+      '@milaboratories/ts-helpers': 1.5.4
+      '@milaboratories/ts-helpers-oclif': 1.1.33
+      '@oclif/core': 4.2.2
+      canonicalize: 2.1.0
+      lru-cache: 11.2.2
+      mime-types: 2.1.35
+      remeda: 2.31.1
+      tar: 7.4.3
+      undici: 7.16.0
+      yaml: 2.8.1
+      zod: 3.23.8
+    transitivePeerDependencies:
+      - aws-crt
+      - supports-color
+
   '@platforma-sdk/blocks-deps-updater@2.0.0':
     dependencies:
       yaml: 2.8.1
@@ -7324,6 +7372,13 @@ snapshots:
       - universal-cookie
 
   '@platforma-sdk/workflow-tengo@5.5.17':
+    dependencies:
+      '@milaboratories/software-pframes-conv': 2.2.9
+      '@platforma-open/milaboratories.software-ptabler': 1.13.4
+      '@platforma-open/milaboratories.software-ptexter': 1.2.0
+      '@platforma-open/milaboratories.software-small-binaries': 1.15.23
+
+  '@platforma-sdk/workflow-tengo@5.6.1':
     dependencies:
       '@milaboratories/software-pframes-conv': 2.2.9
       '@platforma-open/milaboratories.software-ptabler': 1.13.4
@@ -9914,7 +9969,7 @@ snapshots:
       eslint-visitor-keys: 4.2.0
       espree: 10.3.0
       estraverse: 5.3.0
-      picomatch: 4.0.2
+      picomatch: 4.0.3
     transitivePeerDependencies:
       - supports-color
       - typescript
@@ -10041,7 +10096,7 @@ snapshots:
       '@typescript-eslint/types': 8.24.1
       '@typescript-eslint/typescript-estree': 8.24.1(typescript@5.6.3)
       '@typescript-eslint/visitor-keys': 8.24.1
-      debug: 4.4.0(supports-color@8.1.1)
+      debug: 4.4.3
       eslint: 9.20.1
       typescript: 5.6.3
     transitivePeerDependencies:
@@ -10056,7 +10111,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/typescript-estree': 8.24.1(typescript@5.6.3)
       '@typescript-eslint/utils': 8.24.1(eslint@9.20.1)(typescript@5.6.3)
-      debug: 4.4.0(supports-color@8.1.1)
+      debug: 4.4.3
       eslint: 9.20.1
       ts-api-utils: 2.0.1(typescript@5.6.3)
       typescript: 5.6.3
@@ -10069,7 +10124,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.24.1
       '@typescript-eslint/visitor-keys': 8.24.1
-      debug: 4.4.0(supports-color@8.1.1)
+      debug: 4.4.3
       fast-glob: 3.3.3
       is-glob: 4.0.3
       minimatch: 9.0.5
@@ -10993,7 +11048,7 @@ snapshots:
       ajv: 6.12.6
       chalk: 4.1.2
       cross-spawn: 7.0.6
-      debug: 4.4.0(supports-color@8.1.1)
+      debug: 4.4.3
       escape-string-regexp: 4.0.0
       eslint-scope: 8.2.0
       eslint-visitor-keys: 4.2.0
@@ -12267,7 +12322,7 @@ snapshots:
 
   vue-eslint-parser@9.4.3(eslint@9.20.1):
     dependencies:
-      debug: 4.4.0(supports-color@8.1.1)
+      debug: 4.4.3
       eslint: 9.20.1
       eslint-scope: 7.2.2
       eslint-visitor-keys: 3.4.3
