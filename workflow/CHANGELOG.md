@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.workflow
 
+## 2.3.0
+
+### Minor Changes
+
+- ff391b2: Update workflow-tengo version
+
 ## 2.2.4
 
 ### Patch Changes
