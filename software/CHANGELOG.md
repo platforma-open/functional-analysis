@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.software
 
+## 2.3.4
+
+### Patch Changes
+
+- 17a478d: Make R script executable to run it in docker
+
 ## 2.3.3
 
 ### Patch Changes
