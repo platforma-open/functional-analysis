@@ -1,5 +1,12 @@
 ## 1.0.0
 
+## 1.2.12
+
+### Patch Changes
+
+- 6380609: Bump package-builder to 3.11.4
+- 55ac209: Adds dash system dependency
+
 ## 1.2.11
 
 ### Patch Changes
