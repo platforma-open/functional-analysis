@@ -4,7 +4,13 @@ ENV R_VERSION=4.4.2
 ENV BIOCONDUCTOR_VERSION=3.20
 ENV RENV_VERSION=1.0.11
 ENV RENV_CONFIG_PPM_ENABLED=false
-ENV RENV_CONFIG_REPOS_OVERRIDE=https://cloud.r-project.org
+# MILAB-6263: pin to a PPM dated snapshot from before ggplot2 4.0 was released
+# (Sep 2025). renv::restore with cloud.r-project.org silently ignores the lockfile
+# version and installs whatever's listed in /src/contrib/PACKAGES today, which is
+# ggplot2 4.0.x — that strips `check_linewidth`, breaking ggtree 3.14.0's lazy
+# load. A dated PPM URL has frozen package metadata, so the locked Bioc-3.20
+# stack resolves to a self-consistent set.
+ENV RENV_CONFIG_REPOS_OVERRIDE=https://packagemanager.posit.co/cran/2025-09-10
 
 # Install system dependencies required for R packages
 RUN apt-get update && apt-get install -y \
