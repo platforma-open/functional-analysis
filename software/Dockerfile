@@ -4,32 +4,41 @@ ENV R_VERSION=4.4.2
 ENV BIOCONDUCTOR_VERSION=3.20
 ENV RENV_VERSION=1.0.11
 ENV RENV_CONFIG_PPM_ENABLED=false
-ENV RENV_CONFIG_REPOS_OVERRIDE=https://cloud.r-project.org
+# MILAB-6263: pin to a PPM dated snapshot from before ggplot2 4.0 was released
+# (Sep 2025). renv::restore with cloud.r-project.org silently ignores the lockfile
+# version and installs whatever's listed in /src/contrib/PACKAGES today, which is
+# ggplot2 4.0.x — that strips `check_linewidth`, breaking ggtree 3.14.0's lazy
+# load. A dated PPM URL has frozen package metadata, so the locked Bioc-3.20
+# stack resolves to a self-consistent set.
+ENV RENV_CONFIG_REPOS_OVERRIDE=https://packagemanager.posit.co/cran/2025-09-10
 
 # Install system dependencies required for R packages
 RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    curl \
     dash \
-    libcurl4-openssl-dev \
-    libssl-dev \
-    libxml2-dev \
-    libcairo2-dev \
-    libgit2-dev \
     default-libmysqlclient-dev \
+    libbz2-dev \
+    libcairo2-dev \
+    libcurl4-openssl-dev \
+    libfreetype6-dev \
+    libfribidi-dev \
+    libgit2-dev \
+    libgsl-dev \
+    libharfbuzz-dev \
+    libjpeg-dev \
+    liblzma-dev \
+    libpcre2-dev \
+    libpng-dev \
     libpq-dev \
     libsasl2-dev \
     libsqlite3-dev \
     libssh2-1-dev \
-    unixodbc-dev \
-    libharfbuzz-dev \
-    libfribidi-dev \
-    libfreetype6-dev \
-    libpng-dev \
+    libssl-dev \
     libtiff5-dev \
-    libjpeg-dev \
-    libgsl-dev \
-    libbz2-dev \
-    liblzma-dev \
-    libpcre2-dev \
+    libuv1-dev \
+    libxml2-dev \
+    unixodbc-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -48,12 +57,19 @@ COPY ./renv.lock ./renv.lock
 ENV RENV_PATHS_RENV=/app/renv
 ENV RENV_PATHS_LOCKFILE=/app/renv.lock
 
-RUN R --no-echo -e "renv::restore(clean = TRUE)" \
+# Direct renv to install into a project-local library (instead of the
+# system-wide /usr/local/lib/R/site-library) and expose that path to R via
+# R_LIBS_USER so Rscript finds the packages at runtime without any renv code.
+ENV R_LIBS_USER=/app/renv/library
+ENV RENV_PATHS_LIBRARY=${R_LIBS_USER}
+
+# Yes, we have to create it manually. Otherwise default will be used silently.
+RUN mkdir -p "${R_LIBS_USER}"
+
+# First pass: parallel install (fast for the bulk of packages).
+# Second pass: sequential retry to resolve any parallel-install races
+# (e.g. ggplot2 starting before tibble is visible in the library).
+RUN R --no-echo -e "tryCatch(renv::restore(), error = function(e) message('parallel pass finished with errors: ', conditionMessage(e))); options(Ncpus = 1); renv::restore(clean = TRUE)" \
     && find /root/.cache/R -name keys.html -delete \
-    && find /usr/local/lib/R -name keys.html -delete
-
-RUN echo "#!/bin/bash\nR --no-echo --no-restore -e \"renv::restore()\"\n\"\$@\"" > /app/run.sh
-RUN chmod +x /app/run.sh
-
-# Default command runs Rscript
-ENTRYPOINT ["/app/run.sh"]
+    && find /usr/local/lib/R -name keys.html -delete \
+    && find "${R_LIBS_USER}" -name keys.html -delete
