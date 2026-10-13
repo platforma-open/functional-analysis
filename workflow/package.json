@@ -1,22 +1,23 @@
 {
   "name": "@platforma-open/milaboratories.functional-analysis.workflow",
   "version": "2.3.2",
-  "type": "module",
+  "private": true,
   "description": "Block Workflow",
+  "type": "module",
   "scripts": {
-    "build": "shx rm -rf dist && pl-tengo check && pl-tengo build",
+    "build": "shx rm -rf dist && pl-tengo build",
     "test": "vitest",
-    "format": "/usr/bin/env emacs --script ./format.el"
+    "format": "/usr/bin/env emacs --script ./format.el || echo 'No emacs.'",
+    "check": "pl-tengo imports && pl-tengo check"
   },
   "dependencies": {
     "@platforma-open/milaboratories.functional-analysis.software": "workspace:*",
     "@platforma-sdk/workflow-tengo": "catalog:"
   },
   "devDependencies": {
-    "@platforma-sdk/tengo-builder": "catalog:",
-    "@platforma-sdk/workflow-tengo": "catalog:",
-    "@platforma-sdk/test": "catalog:",
     "@milaboratories/software-pframes-conv": "catalog:",
-    "vitest": "catalog:"
+    "@platforma-sdk/tengo-builder": "catalog:",
+    "@platforma-sdk/test": "catalog:",
+    "shx": "catalog:"
   }
 }

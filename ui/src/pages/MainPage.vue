@@ -9,11 +9,11 @@ import {
   PlMaskIcon24,
   PlSlideModal,
   usePlDataTableSettingsV2,
-} from '@platforma-sdk/ui-vue';
-import type { PlRef } from '@platforma-sdk/model';
-import { plRefsEqual } from '@platforma-sdk/model';
-import { ref } from 'vue';
-import { useApp } from '../app';
+} from "@platforma-sdk/ui-vue";
+import type { PlRef } from "@platforma-sdk/model";
+import { plRefsEqual } from "@platforma-sdk/model";
+import { ref } from "vue";
+import { useApp } from "../app";
 
 const app = useApp();
 
@@ -29,25 +29,25 @@ const showSettings = () => {
 
 function setInput(inputRef?: PlRef) {
   if (inputRef)
-    app.model.args.title = app.model.outputs.geneListOptions?.find((o) => plRefsEqual(o.ref, inputRef))?.label;
-  else
-    app.model.args.title = undefined;
+    app.model.args.title = app.model.outputs.geneListOptions?.find((o) =>
+      plRefsEqual(o.ref, inputRef),
+    )?.label;
+  else app.model.args.title = undefined;
 }
 
 const pathwayCollectionOptions = [
-  { label: 'Gene Ontology (GO)', value: 'GO' },
-  { label: 'Reactome (RA)', value: 'Reactome' },
+  { label: "Gene Ontology (GO)", value: "GO" },
+  { label: "Reactome (RA)", value: "Reactome" },
   // { text: "WikiPathways (WP)", value: "WikiPathways" },
   // { text: "Kyoto Encyclopedia of Genes and Genomes (KEGG)", value: "KEGG" },
 ];
 
 // Define input gene subset options
 const geneSubsetOptions = [
-  { label: 'Upregulated', value: 'Up' },
-  { label: 'Downregulated', value: 'Down' },
-  { label: 'Dysregulated (all DEGs)', value: 'DEGs' },
+  { label: "Upregulated", value: "Up" },
+  { label: "Downregulated", value: "Down" },
+  { label: "Dysregulated (all DEGs)", value: "DEGs" },
 ];
-
 </script>
 
 <template>
@@ -65,13 +65,22 @@ const geneSubsetOptions = [
     <PlSlideModal v-model="settingsAreShown">
       <template #title>Settings</template>
       <PlDropdownRef
-        v-model="app.model.args.geneListRef" :options="app.model.outputs.geneListOptions"
+        v-model="app.model.args.geneListRef"
+        :options="app.model.outputs.geneListOptions"
         label="Select gene list"
         @update:model-value="setInput"
       />
-      <PlDropdown v-model="app.model.args.pathwayCollection" :options="pathwayCollectionOptions" label="Select pathway collection" />
+      <PlDropdown
+        v-model="app.model.args.pathwayCollection"
+        :options="pathwayCollectionOptions"
+        label="Select pathway collection"
+      />
       <!-- Option buttons to choose how to do GO analysis -->
-      <PlCheckboxGroup v-model="app.model.args.geneSubset" label="Select gene subsets" :options="geneSubsetOptions" >
+      <PlCheckboxGroup
+        v-model="app.model.args.geneSubset"
+        label="Select gene subsets"
+        :options="geneSubsetOptions"
+      >
         <template #tooltip>
           Select one or more Differentially Enriched Gene (DEG) subsets for functional analysis. The
           results will be displayed separately for each of the selected subsets
@@ -79,6 +88,12 @@ const geneSubsetOptions = [
       </PlCheckboxGroup>
     </PlSlideModal>
 
-    <PlAgDataTableV2 v-if="app.model.ui" v-model="app.model.ui.tableState" :settings="tableSettings" show-export-button show-columns-panel />
+    <PlAgDataTableV2
+      v-if="app.model.ui"
+      v-model="app.model.ui.tableState"
+      :settings="tableSettings"
+      show-export-button
+      show-columns-panel
+    />
   </PlBlockPage>
 </template>
