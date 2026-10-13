@@ -14,18 +14,16 @@ catalog:
   '@platforma-sdk/block-tools': 2.16.13
   '@platforma-sdk/test': 1.84.20
   '@platforma-sdk/tengo-builder': 4.1.11
-  '@milaboratories/graph-maker': ~1.1.179
-  '@milaboratories/software-pframes-conv': ~2.2.9
+  '@milaboratories/graph-maker': ^1.10.1
 
   '@platforma-open/milaboratories.runenv-r-functional-analysis': ~1.0.6
   '@platforma-sdk/package-builder': 3.16.1
-  '@platforma-sdk/blocks-deps-updater': ~2.0.0
 
   'vue': 3.5.24
 
   'typescript': ~5.6.3
   'turbo': ~2.4.4
-  'vitest': ~2.1.8
+  'vitest': ^4.0.7
   'shx': ~0.4.0
 
   '@changesets/cli': ~2.28.1
