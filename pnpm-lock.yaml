@@ -12,6 +12,9 @@ catalogs:
     '@milaboratories/graph-maker':
       specifier: ^1.10.1
       version: 1.10.1
+    '@milaboratories/helpers':
+      specifier: 1.14.5
+      version: 1.14.5
     '@milaboratories/ts-builder':
       specifier: 1.7.2
       version: 1.7.2
@@ -126,6 +129,9 @@ importers:
       '@platforma-sdk/block-kind':
         specifier: 'catalog:'
         version: 1.1.0
+      '@platforma-sdk/model':
+        specifier: 'catalog:'
+        version: 1.84.20
       '@types/node':
         specifier: '*'
         version: 24.5.2
@@ -142,12 +148,18 @@ importers:
       '@platforma-sdk/block-tools':
         specifier: 'catalog:'
         version: 2.16.13(@types/node@24.5.2)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.11(@types/node@24.5.2)(@vitest/coverage-istanbul@4.1.11)(vite@8.3.4(@types/node@24.5.2)(yaml@2.8.1))
 
   model:
     dependencies:
       '@milaboratories/graph-maker':
         specifier: 'catalog:'
         version: 1.10.1(@milaboratories/pl-model-common@1.53.0)(@platforma-sdk/model@1.84.20)(@platforma-sdk/ui-vue@1.84.20(@bytecodealliance/preview2-shim@0.20.2)(typescript@5.6.3))(d3-dispatch@3.0.1)(d3-path@3.1.0)(d3-scale-chromatic@3.1.0)(typescript@5.6.3)
+      '@milaboratories/helpers':
+        specifier: 'catalog:'
+        version: 1.14.5
       '@platforma-open/milaboratories.functional-analysis.kind':
         specifier: workspace:*
         version: link:../kind

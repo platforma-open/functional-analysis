@@ -22,17 +22,17 @@ const tableSettings = usePlDataTableSettingsV2({
   sheets: () => app.model.outputs.ORAsheets,
 });
 
-const settingsAreShown = ref(app.model.outputs.ORApt === undefined);
+const settingsAreShown = ref(app.model.data.geneListRef === undefined);
 const showSettings = () => {
   settingsAreShown.value = true;
 };
 
 function setInput(inputRef?: PlRef) {
   if (inputRef)
-    app.model.args.title = app.model.outputs.geneListOptions?.find((o) =>
+    app.model.data.title = app.model.outputs.geneListOptions?.find((o) =>
       plRefsEqual(o.ref, inputRef),
     )?.label;
-  else app.model.args.title = undefined;
+  else app.model.data.title = undefined;
 }
 
 const pathwayCollectionOptions = [
@@ -65,19 +65,19 @@ const geneSubsetOptions = [
     <PlSlideModal v-model="settingsAreShown">
       <template #title>Settings</template>
       <PlDropdownRef
-        v-model="app.model.args.geneListRef"
+        v-model="app.model.data.geneListRef"
         :options="app.model.outputs.geneListOptions"
         label="Select gene list"
         @update:model-value="setInput"
       />
       <PlDropdown
-        v-model="app.model.args.pathwayCollection"
+        v-model="app.model.data.pathwayCollection"
         :options="pathwayCollectionOptions"
         label="Select pathway collection"
       />
       <!-- Option buttons to choose how to do GO analysis -->
       <PlCheckboxGroup
-        v-model="app.model.args.geneSubset"
+        v-model="app.model.data.geneSubset"
         label="Select gene subsets"
         :options="geneSubsetOptions"
       >
@@ -89,8 +89,7 @@ const geneSubsetOptions = [
     </PlSlideModal>
 
     <PlAgDataTableV2
-      v-if="app.model.ui"
-      v-model="app.model.ui.tableState"
+      v-model="app.model.data.tableState"
       :settings="tableSettings"
       show-export-button
       show-columns-panel

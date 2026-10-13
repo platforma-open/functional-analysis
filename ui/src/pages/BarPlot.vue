@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { PredefinedGraphOption } from "@milaboratories/graph-maker";
 import { GraphMaker } from "@milaboratories/graph-maker";
-import "@milaboratories/graph-maker/styles";
 import { useApp } from "../app";
 import { computed, ref, useTemplateRef, watch } from "vue";
 import type { PColumnIdAndSpec } from "@platforma-sdk/model";
@@ -61,7 +60,7 @@ const graphMakerRef = useTemplateRef("graphMaker");
 watch(
   () => app.model.outputs.ORATop10Pcols,
   (topTablePcols) => {
-    delete app.model.ui.graphState.optionsState;
+    delete app.model.data.graphState.optionsState;
     defaultOptions.value = getDefaultOptions(topTablePcols);
     graphMakerRef.value?.reset();
   },
@@ -71,7 +70,7 @@ watch(
 <template>
   <GraphMaker
     ref="graphMaker"
-    v-model="app.model.ui.graphState"
+    v-model="app.model.data.graphState"
     chartType="discrete"
     template="bar"
     :p-frame="app.model.outputs.ORATop10Pf"
