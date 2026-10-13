@@ -1,5 +1,4 @@
 ll := import("@platforma-sdk/workflow-tengo:ll")
-ORAResPfconvParamsLib := import(":ORAResImportParams")
 
 getTargetOutputs := func(species, pathwayCollection, blockId) {
 	return [ 

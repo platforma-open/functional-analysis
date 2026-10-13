@@ -1,11 +1,7 @@
 wf := import("@platforma-sdk/workflow-tengo:workflow")
-exec := import("@platforma-sdk/workflow-tengo:exec")
 ORAResPfconvParamsLib := import(":ORAResImportParams")
-xsv := import("@platforma-sdk/workflow-tengo:pframes.xsv")
 assets := import("@platforma-sdk/workflow-tengo:assets")
 pframes := import("@platforma-sdk/workflow-tengo:pframes")
-pSpec := import("@platforma-sdk/workflow-tengo:pframes.spec")
-text := import("text")
 
 analysisTpl := assets.importTemplate(":enrichment")
 
@@ -19,7 +15,6 @@ wf.body(func(args) {
 	blockId := wf.blockId().getDataAsJson()
 
 	
-	targetOutputsLib := import(":target-outputs")
 
 	input := args.inputRegDir
 	inputSpec := input.spec
@@ -28,20 +23,30 @@ wf.body(func(args) {
 
 	ORAResImportParams := ORAResPfconvParamsLib.getColumns(species, pathwayCollection)
 
+	// Memory and CPU for the two result imports. Each holds one row per enriched
+	// pathway. The R tool runs in a runenv with no Parquet reader, so the
+	// exchange stays CSV.
+	convMem := "16GiB" // @TODO: set based on the size of the input
+	convCpu := 1 // @TODO: set based on the size of the input
+
 	targetOutputs := [
 	{
 		type: "Xsv",
 		xsvType: "csv",
 		settings: ORAResPfconvParamsLib.getColumns(species, pathwayCollection),
 		name: "allEnrichment",
-		path: ["allEnrichmentCsv"]
+		path: ["allEnrichmentCsv"],
+		mem: convMem,
+		cpu: convCpu
 	},
 	{
 		type: "Xsv",
 		xsvType: "csv",
 		settings: ORAResPfconvParamsLib.getColumns(species, pathwayCollection),
 		name: "topEnrichment",
-		path: ["topEnrichmentCsv"]
+		path: ["topEnrichmentCsv"],
+		mem: convMem,
+		cpu: convCpu
 	}]
 
 	enrichmentResults := pframes.processColumn(
