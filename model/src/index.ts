@@ -1,70 +1,48 @@
-import type { GraphMakerState } from '@milaboratories/graph-maker';
-import type {
-  InferOutputsType,
-  PColumnIdAndSpec,
-  PFrameHandle,
-  PlDataTableStateV2,
-  PlRef,
-} from '@platforma-sdk/model';
+import { kind } from "@platforma-open/milaboratories.functional-analysis.kind";
+import type { InferOutputsType, PColumnIdAndSpec, PFrameHandle } from "@platforma-sdk/model";
 import {
-  BlockModel,
+  BlockModelV3,
   createPFrameForGraphs,
   createPlDataTableSheet,
-  createPlDataTableStateV2,
   createPlDataTableV2,
   getUniquePartitionKeys,
   isPColumnSpec,
-} from '@platforma-sdk/model';
+} from "@platforma-sdk/model";
+import { blockDataModel } from "./dataModel";
+import type { BlockArgs } from "./types";
 
-export type UiState = {
-  tableState: PlDataTableStateV2;
-  graphState: GraphMakerState;
-};
+export { blockDataModel } from "./dataModel";
+export type { BlockArgs, BlockData } from "./types";
 
-export type BlockArgs = {
-  geneListRef?: PlRef;
-  title?: string;
-  pathwayCollection?: string;
-  geneSubset: string[];
-};
+export const platforma = BlockModelV3.create({ dataModel: blockDataModel, kind })
 
-export const model = BlockModel.create()
+  // The run gate. Throwing shows the reason in the UI. Replaces V1's
+  // `.argsValid`. The projection strips the view state and returns the same
+  // keys V1 stored as args.
+  .args<BlockArgs>((data): BlockArgs => {
+    const { tableState: _tableState, graphState: _graphState, ...args } = data;
 
-  .withArgs<BlockArgs>({
-    pathwayCollection: 'GO',
-    geneSubset: ['Up', 'Down'],
+    if (args.geneListRef === undefined) {
+      throw new Error("Gene list is required");
+    }
+    if (args.pathwayCollection === undefined) {
+      throw new Error("Pathway collection is required");
+    }
+    // An empty subset list gives the R script nothing to enrich.
+    if (args.geneSubset.length === 0) {
+      throw new Error("At least one gene subset is required");
+    }
+
+    return args;
   })
 
-  .withUiState<UiState>({
-    tableState: createPlDataTableStateV2(),
-    graphState: {
-      title: 'Top 10 enriched pathways',
-      template: 'bar',
-      axesSettings: {
-        axisX: {
-          // These angles do not seems to work currently when (reverse axis) is reverse: true
-          axisLabelsAngle: 0,
-          // Need to hide this axis title for proper alignment of plots for now
-          titleMode: 'hidden',
-        },
-        axisY: {
-          axisLabelsAngle: 0,
-        },
-        legend: {},
-        other: {
-          reverse: true,
-          facetColumns: 1,
-          facetSharedBy: 'none',
-        },
-      } as Partial<GraphMakerState['axesSettings']>,
-    },
-  })
-
-  // Activate "Run" button only after these conditions are satisfied
-  .argsValid((ctx) => (
-    (ctx.args.geneListRef !== undefined))
-  && ((ctx.args.geneSubset !== undefined)),
-  )
+  // Inverse of the kind's init-params contract. `title` is left out: the UI
+  // derives it from the gene list label.
+  .templateParams((data) => ({
+    geneListRef: data.geneListRef,
+    pathwayCollection: data.pathwayCollection,
+    geneSubset: data.geneSubset,
+  }))
 
   // User can only select as input regulationDirection lists
   // includeNativeLabel ensures regulationDirection pl7.app/label
@@ -72,27 +50,34 @@ export const model = BlockModel.create()
   // addLabelAsSuffix moves the native label to the end
   // forceTraceElements ensures trace labels are always shown (e.g., cluster-markers or sc-differential-expression parameters)
   // Result: [dataID] / A vs B
-  .output('geneListOptions', (ctx) =>
-    ctx.resultPool.getOptions((spec) => isPColumnSpec(spec)
-      && spec.name === 'pl7.app/rna-seq/regulationDirection',
-    {
-      includeNativeLabel: false,
-      addLabelAsSuffix: false,
-      forceTraceElements: ['milaboratories.cluster-markers', 'milaboratories.sc-differential-expression'],
-    }),
+  .output("geneListOptions", (ctx) =>
+    ctx.resultPool.getOptions(
+      (spec) => isPColumnSpec(spec) && spec.name === "pl7.app/rna-seq/regulationDirection",
+      {
+        includeNativeLabel: false,
+        addLabelAsSuffix: false,
+        forceTraceElements: [
+          "milaboratories.cluster-markers",
+          "milaboratories.sc-differential-expression",
+        ],
+      },
+    ),
   )
 
-  .output('ORApt', (ctx) => {
-    const pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
+  // The table and its sheets are two outputs: PlAgDataTableV2 (via
+  // usePlDataTableSettingsV2) takes the table status-wrapped and the sheets
+  // as a plain value.
+  .outputWithStatus("ORApt", (ctx) => {
+    const pCols = ctx.outputs?.resolve("ORAPf")?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
 
-    return createPlDataTableV2(ctx, pCols, ctx.uiState?.tableState);
+    return createPlDataTableV2(ctx, pCols, ctx.data.tableState);
   })
 
-  .output('ORAsheets', (ctx) => {
-    const pCols = ctx.outputs?.resolve('ORAPf')?.getPColumns();
+  .output("ORAsheets", (ctx) => {
+    const pCols = ctx.outputs?.resolve("ORAPf")?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
@@ -115,25 +100,27 @@ export const model = BlockModel.create()
     return [createPlDataTableSheet(ctx, firstAxisSpec, firstAxisValues)];
   })
 
-  .output('ORATop10Pf', (ctx): PFrameHandle | undefined => {
-    let pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
+  // `withStatus` on the plot frame: GraphMaker's `p-frame` prop takes the
+  // status-wrapped output.
+  .outputWithStatus("ORATop10Pf", (ctx): PFrameHandle | undefined => {
+    let pCols = ctx.outputs?.resolve("ORATop10Pf")?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
 
     pCols = pCols.filter(
-      (col) => (
+      (col) =>
         // Filter out Gene/Background Ratio pColumns
-        col.spec.name !== 'pl7.app/rna-seq/BgRatio')
-      && (col.spec.name !== 'pl7.app/rna-seq/GeneRatio'),
+        col.spec.name !== "pl7.app/rna-seq/BgRatio" &&
+        col.spec.name !== "pl7.app/rna-seq/GeneRatio",
     );
 
     return createPFrameForGraphs(ctx, pCols);
   })
 
   // Return PColumnIdAndSpec needed for default plot parameters
-  .output('ORATop10Pcols', (ctx) => {
-    const pCols = ctx.outputs?.resolve('ORATop10Pf')?.getPColumns();
+  .output("ORATop10Pcols", (ctx) => {
+    const pCols = ctx.outputs?.resolve("ORATop10Pf")?.getPColumns();
     if (pCols === undefined) {
       return undefined;
     }
@@ -143,21 +130,19 @@ export const model = BlockModel.create()
         ({
           columnId: c.id,
           spec: c.spec,
-        } satisfies PColumnIdAndSpec),
+        }) satisfies PColumnIdAndSpec,
     );
   })
 
   .title((ctx) =>
-    ctx.args.title
-      ? `Functional Analysis - ${ctx.args.title}`
-      : 'Functional Analysis',
+    ctx.data.title ? `Functional Analysis - ${ctx.data.title}` : "Functional Analysis",
   )
 
-  .sections([
-    { type: 'link', href: '/', label: 'Table' },
-    { type: 'link', href: '/graph', label: 'Bar plot' },
+  .sections(() => [
+    { type: "link" as const, href: "/" as const, label: "Table" },
+    { type: "link" as const, href: "/graph" as const, label: "Bar plot" },
   ])
 
-  .done(2);
+  .done();
 
-export type BlockOutputs = InferOutputsType<typeof model>;
+export type BlockOutputs = InferOutputsType<typeof platforma>;

@@ -1,16 +1,11 @@
 self := import("@platforma-sdk/workflow-tengo:tpl")
 
-json := import("json")
 text := import("text")
-ll := import("@platforma-sdk/workflow-tengo:ll")
 xsv := import("@platforma-sdk/workflow-tengo:pframes.xsv")
 exec := import("@platforma-sdk/workflow-tengo:exec")
 assets := import("@platforma-sdk/workflow-tengo:assets")
 pframes := import("@platforma-sdk/workflow-tengo:pframes")
 pConstants := import("@platforma-sdk/workflow-tengo:pframes.constants")
-slices := import("@platforma-sdk/workflow-tengo:slices")
-feats := import("@platforma-sdk/workflow-tengo:feats")
-pt := import("@platforma-sdk/workflow-tengo:pt")
 
 self.defineOutputs("allEnrichmentCsv",
 	"topEnrichmentCsv")
@@ -30,7 +25,8 @@ self.body(func(inputs) {
     inputSpec.axesSpec[0].annotations = { "pl7.app/label": "Ensembl Id"}
     inputSpec.annotations = {"pl7.app/label": "Regulation direction"}
 
-    csvGeneList := xsv.exportFrame([{data: inputData, spec: inputSpec}], "csv", {})
+    // The gene list has one row per gene. The R tool reads only CSV.
+    csvGeneList := xsv.exportFrame([{data: inputData, spec: inputSpec}], "csv", {}, { mem: "16GiB", cpu: 1 })
 
     // Join subset options into string to input it as an argument for R
     geneSubset := text.join(inputs.geneSubset, "_");
