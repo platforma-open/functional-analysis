@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.software
 
+## 2.3.7
+
+### Patch Changes
+
+- 5d192b7: Release every package through npm trusted publishing (OIDC) so each package's trusted publisher is used before it expires.
+
 ## 2.3.6
 
 ### Patch Changes

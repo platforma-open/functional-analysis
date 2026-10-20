@@ -1,5 +1,13 @@
 # @platforma-open/milaboratories.functional-analysis.ui
 
+## 2.4.1
+
+### Patch Changes
+
+- 5d192b7: Release every package through npm trusted publishing (OIDC) so each package's trusted publisher is used before it expires.
+- Updated dependencies [5d192b7]
+  - @platforma-open/milaboratories.functional-analysis.model@2.5.1
+
 ## 2.4.0
 
 ### Minor Changes

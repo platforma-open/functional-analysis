@@ -1,5 +1,11 @@
 # @platforma-open/milaboratories.functional-analysis.test
 
+## 1.0.2
+
+### Patch Changes
+
+- 5d192b7: Release every package through npm trusted publishing (OIDC) so each package's trusted publisher is used before it expires.
+
 ## 1.0.1
 
 ### Patch Changes
