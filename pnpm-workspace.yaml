@@ -11,13 +11,13 @@ catalog:
   '@platforma-sdk/model': 1.84.20
   '@platforma-sdk/ui-vue': 1.84.20
   '@platforma-sdk/workflow-tengo': 6.15.0
-  '@platforma-sdk/block-tools': 2.16.13
+  '@platforma-sdk/block-tools': 2.20.0
   '@platforma-sdk/test': 1.84.20
   '@platforma-sdk/tengo-builder': 4.1.11
   '@milaboratories/graph-maker': ^1.10.1
 
   '@platforma-open/milaboratories.runenv-r-functional-analysis': ~1.0.6
-  '@platforma-sdk/package-builder': 3.16.1
+  '@platforma-sdk/package-builder': 3.18.0
 
   'vue': 3.5.24
 
